@@ -12,15 +12,18 @@ app.get('/', (req, res) => {
     res.render('main', {category: 'ALL'})
 })
 
+app.get('/login', (req, res) => {
+    res.render('login')
+})
+
 app.get('/main/:category', (req, res) => {
     var category = req.params.category
     res.render('main', {category: category})
 })
 
-app.get('/login', (req, res) => {
-    res.render('login')
+app.get('/item_info', (req, res) => {
+    res.render('item_info')
 })
-
 app.get('/signup', (req, res) => {
     res.render('signup')
 })
