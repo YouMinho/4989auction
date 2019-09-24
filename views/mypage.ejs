@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('./includes/head.ejs') %>
+
+<body>
+    <%- include('./includes/logo.ejs') %>
+    <!-- Page Content -->
+    <div class="container" align="center" style="margin-top: 70px">
+        <div class="col-lg-6" align="center">
+            <h2>개인정보 수정</h2>
+            <form id="memberform" method="post" action="">
+                <div class="form-group" align="left">
+                    <label for="name">이름</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="">
+                </div>
+                <div class="form-group" align="left">
+                    <label for="">아이디</label>
+                    <input type="text" class="form-control" id="id" name="id" onkeyup="javascript:idcheck();" placeholder="">
+                    <div id="resultview"></div>
+                </div>
+                <div class="form-group" align="left">
+                    <label for="">비밀번호</label>
+                    <input type="password" class="form-control" id="pass" name="pass" placeholder="">
+                </div>
+                <div class="form-group" align="left">
+                    <label for="">비밀번호재입력</label>
+                    <input type="password" class="form-control" id="passcheck" name="passcheck" placeholder="">
+                </div>
+                <div class="form-group" align="left">
+                    <label for="email">이메일</label><br>
+                    <div id="email" class="custom-control-inline">
+                        <input type="text" class="form-control" id="emailid" name="emailid" placeholder="" size="25"> @
+                        <select class="form-control" id="emaildomain" name="emaildomain">
+                            <option value="naver.com">naver.com</option>
+                            <option value="google.com">google.com</option>
+                            <option value="daum.net">daum.net</option>
+                            <option value="nate.com">nate.com</option>
+                            <option value="hanmail.net">hanmail.net</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" align="left">
+                    <label for="tel">전화번호</label>
+                    <div id="tel" class="custom-control-inline">
+                        <select class="form-control" id="tel1" name="tel1">
+                            <option value="010">010</option>
+                            <option value="02">02</option>
+                            <option value="031">031</option>
+                            <option value="032">032</option>
+                            <option value="041">041</option>
+                            <option value="051">051</option>
+                            <option value="061">061</option>
+                        </select> _
+                        <input type="text" class="form-control" id="tel2" name="tel2" placeholder=""> _
+                        <input type="text" class="form-control" id="tel3" name="tel3" placeholder="">
+                    </div>
+                </div>
+                <div class="form-group" align="left">
+                    <label for="">주소</label><br>
+                    <input type="text" class="form-control" id="address" name="address" placeholder="">
+                </div>
+                <div class="form-group" align="center">
+                    <button type="button" class="btn btn-primary" id="registerBtn">수정</button>
+                    <button type="reset" class="btn btn-warning">초기화</button>
+                </div>
+            </form>
+        </div>
+    
+    
+    <div class="works_item alignleft clear" style="margin-top: 150px">
+        <div class="carouseller1 row-fluid for-car">
+            <h2>올린 물품</h2>
+            <div class="carousel-wrapper" style="margin-top: 50px">
+                <div class="carousel-items">
+                    <div class="span3 carousel-block">
+                        <div class="card h-100">
+                            <a href="#"><img class="card-img-top" src="http://placehold.it/200x100" alt=""></a>
+                            <div class="card-body">
+                                <h4 class="card-title">
+                                    <a href="#">1번 이름</a>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span3 carousel-block">
+                        <div class="card h-100">
+                            <a href="#"><img class="card-img-top" src="http://placehold.it/200x100" alt=""></a>
+                            <div class="card-body">
+                                <h4 class="card-title">
+                                    <a href="#">이름 클릭</a>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span3 carousel-block">
+                        <div class="card h-100">
+                            <a href="#"><img class="card-img-top" src="http://placehold.it/200x100" alt=""></a>
+                            <div class="card-body">
+                                <h4 class="card-title">
+                                    <a href="#">히면</a>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span3 carousel-block">
+                        <div class="card h-100">
+                            <a href="#"><img class="card-img-top" src="http://placehold.it/200x100" alt=""></a>
+                            <div class="card-body">
+                                <h4 class="card-title">
+                                    <a href="#">이동됨</a>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span3 carousel-block">
+                        <h2>5 item</h2>
+                    </div>
+                    <div class="span3 carousel-block">
+                        <h2>6 item</h2>
+                    </div>
+                    <div class="span3 carousel-block">
+                        <h2>7 item</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-control-block">
+                <div class="carousel-button-left shadow"><a href="javascript:void(0)">‹</a></div>
+                <div class="carousel-button-right shadow"><a href="javascript:void(0)">›</a></div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="works_item alignleft clear" style="margin-top: 150px">
+        <div class="carouseller2 row-fluid for-car">
+            <h2>참여 물품</h2>
+            <div class="carousel-wrapper" style="margin-top: 50px">
+                <div class="carousel-items">
+                    <div class="span3 carousel-block">
+                        <div class="card h-100">
+                            <a href="#"><img class="card-img-top" src="http://placehold.it/200x100" alt=""></a>
+                            <div class="card-body">
+                                <h4 class="card-title">
+                                    <a href="#">1번 이름</a>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span3 carousel-block">
+                        <div class="card h-100">
+                            <a href="#"><img class="card-img-top" src="http://placehold.it/200x100" alt=""></a>
+                            <div class="card-body">
+                                <h4 class="card-title">
+                                    <a href="#">이름 클릭</a>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span3 carousel-block">
+                        <div class="card h-100">
+                            <a href="#"><img class="card-img-top" src="http://placehold.it/200x100" alt=""></a>
+                            <div class="card-body">
+                                <h4 class="card-title">
+                                    <a href="#">히면</a>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span3 carousel-block">
+                        <div class="card h-100">
+                            <a href="#"><img class="card-img-top" src="http://placehold.it/200x100" alt=""></a>
+                            <div class="card-body">
+                                <h4 class="card-title">
+                                    <a href="#">이동됨</a>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span3 carousel-block">
+                        <h2>5 item</h2>
+                    </div>
+                    <div class="span3 carousel-block">
+                        <h2>6 item</h2>
+                    </div>
+                    <div class="span3 carousel-block">
+                        <h2>7 item</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-control-block">
+                <div class="carousel-button-left shadow"><a href="javascript:void(0)">‹</a></div>
+                <div class="carousel-button-right shadow"><a href="javascript:void(0)">›</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+    <script src="./js/mypg.js"></script>
+    <script type="text/javascript">
+    $(function() {
+        carouseller1 = new carousel('.carouseller1');
+        carouseller2 = new carousel('.carouseller2');
+    });
+    </script>
+    <!-- /.container -->
+    <!-- Footer -->
+    <%- include('./includes/footer.ejs') %>
+    </footer>
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
