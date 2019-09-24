@@ -14,6 +14,14 @@ app.get('/login', (req, res) => {
     res.render('login')
 })
 
+app.get('/signup', (req, res) => {
+    res.render('signup')
+})
+
+app.get('/find_idpw', (req, res) => {
+    res.render('find_idpw')
+})
+
 app.listen(8888, () => {
     console.log('8888 port opened!!!');
 })

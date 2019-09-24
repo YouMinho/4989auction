@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('./includes/head.ejs') %>
+
+<body>
+    <!-- logo & Navigation -->
+    <%- include('./includes/logo.ejs') %>
+
+    <!-- Page Content -->
+    <div class="container" style="text-align:center">
+
+        <!-- Page Heading/Breadcrumbs -->
+        <h3 class="mt-4 mb-3">아이디/비밀번호 찾기</h3>
+
+        <form method="post" id="authForm" action="">
+            <input type="hidden" name="redirectUrl" value="">
+            <fieldset>
+                <div class="box_login">
+                    <div class="inp_text">
+                        <span style="margin-right:24px; font-size:24px;">이름</span>
+                        <input type="email" id="loginId" name="loginId" placeholder="ID">
+                    </div>
+                    <div class="inp_text">
+                        <span style="font-size:24px;">연락처</span>
+                        <input type="password" id="loginPw" name="password" placeholder="Password">
+                    </div>
+                </div>
+                <button type="submit" class="btn_login" style="margin-bottom: 25px; margin-top: 15px">확인</button>
+            </fieldset>
+        </form>
+
+    </div>
+
+    <!-- /.container -->
+    <%- include('./includes/footer.ejs') %>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    </div>
+</body>
+
+</html>
