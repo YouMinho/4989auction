@@ -10,6 +10,10 @@ app.get('/', (req, res) => {
     res.render('main')
 })
 
+app.get('/login', (req, res) => {
+    res.render('login')
+})
+
 app.listen(8888, () => {
     console.log('8888 port opened!!!');
 })
