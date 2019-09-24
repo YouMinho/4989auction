@@ -1,13 +1,20 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
 
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
 app.set('views', './views');
 app.set('view engine', 'ejs');
 
 
 app.get('/', (req, res) => {
-    res.render('main')
+    res.render('main', {category: 'ALL'})
+})
+
+app.get('/main/:category', (req, res) => {
+    var category = req.params.category
+    res.render('main', {category: category})
 })
 
 app.get('/login', (req, res) => {
