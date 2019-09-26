@@ -17,7 +17,7 @@ app.get('/login', (req, res) => {
 })
 
 app.get('/item_add', (req, res) => {
-    res.render('login')
+    res.render('item_add')
 })
 
 app.get('/main/:category', (req, res) => {

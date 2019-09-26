@@ -12,12 +12,19 @@
             <h1 class="my-4">여기서 부터 시작 합니다 4989 여기에 뭘 넣을까</h1>
             <h3 class="my-4"><%=category%></h3>
             <!-- Search Section -->
-            <div class="input-group" style="width: 450px; margin-bottom: 15px;">
-                <input type="text" style="width: 300px;" class="form-control">
-                <span class="input-group-btn">
-                    <button style="margin-left: 15px;" class="btn btn-secondary" type="button">검색</button>
-                </span>
+
+            <div class="row">
+                <div class="input-group col-4">
+                    <input type="text" style="width: 300px;" class="form-control">
+                </div>
+                <div class="input-group-btn col-1">
+                    <button class="btn btn-secondary" type="button">검색</button>
+                </div>
+                <div class="col-7 text-right">
+                    <a href="/item_add"><button class="btn btn-secondary" type="button">물품 올리기</button></a>
+                </div>
             </div>
+
             <!-- Portfolio Section -->
             <h2>인기품목</h2>
 
