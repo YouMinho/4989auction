@@ -7,12 +7,15 @@ app.use(express.static('public'));
 app.set('views', './views');
 app.set('view engine', 'ejs');
 
-
 app.get('/', (req, res) => {
     res.render('main', {category: 'ALL'})
 })
 
 app.get('/login', (req, res) => {
+    res.render('login')
+})
+
+app.get('/item_add', (req, res) => {
     res.render('login')
 })
 
