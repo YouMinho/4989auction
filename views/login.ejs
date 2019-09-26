@@ -6,35 +6,28 @@
 <body>
    <%- include('./includes/logo.ejs') %>
   <!-- Page Content -->
-  <div class="container" style="text-align:center">
-
-    <!-- Page Heading/Breadcrumbs -->
-    <h3 class="mt-4 mb-3">로그인</h3>
-
-    <form method="post" id="authForm" action="">
-      <input type="hidden" name="redirectUrl" value="">
-      <fieldset>
-        <div class="box_login">
-          <div class="inp_text">
-            <span style="margin-right:24px; font-size: 24px">아이디</span>
-            <input type="email" id="loginId" name="loginId" placeholder="ID">
-          </div>
-          <div class="inp_text">
-            <label for="loginPw" class="screen_out" style="font-size: 24px">비밀번호</label>
-            <input type="password" id="loginPw" name="password" placeholder="Password">
-          </div>
+  <!-- Page Content -->
+    <div class="container col-3 border border-dark rounded" style="margin-top:100px; margin-bottom: 120px; padding: 40px;">
+        <!-- Page Heading/Breadcrumbs -->
+        <h2>LOGIN</h2>
+        <p>Wellcome 4989</p>
+        <form action="/action_page.php">
+            <div class="form-group">
+                <label for="usr">Name:</label>
+                <input type="text" class="form-control" id="usr" name="username">
+            </div>
+            <div class="form-group">
+                <label for="pwd">Password:</label>
+                <input type="password" class="form-control" id="pwd" name="password">
+            </div>
+            <button type="submit" class="btn btn-primary">로그인</button>
+        </form>
+        <div style="margin-top: 10px">
+         <a href="" class="" style="margin-right: 10px">회원가입</a>    
+        <a href="find_idpw.html" class="">아이디/비밀번호 찾기</a>
         </div>
-        <button type="submit" class="btn_login" style="margin-bottom: 5px; margin-top: 5px">로그인</button>
-        <div class="login_append">
-          <span class="txt_find">
-            <a href="signup" class="" style="margin-right: 10px">회원가입</a>
-            <a href="find_idpw" class="">아이디/비밀번호 찾기</a>
-          </span>
-        </div>
-      </fieldset>
-    </form>
 
-  </div>
+    </div>
   <!-- /.container -->
 
    <!-- Footer -->
