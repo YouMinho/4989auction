@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 
+app.locals.pretty = true;
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
 app.set('views', './views');
