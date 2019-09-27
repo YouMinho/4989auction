@@ -28,7 +28,7 @@
 <body style="padding:0px;">
   
   <!-- Page Content -->
-  <div class="container mb-4">
+  <div class="container mb-4" id="content">
     <!-- Page Heading/Breadcrumbs -->
     <form class="form-horizontal">
         <h1 style="margin-bottom: 2%; margin-left: 3%">물품등록</h1>
@@ -67,43 +67,12 @@
           </div>
           <div class="form-group">
             <label class="col-sm-2 control-label">경매시간<span class="mandatory">*</span></label>
-            <div class="col-sm-2">
+            <div class="col-sm-6">
               <select class="form-control" id="sel1">
                 <option hidden>일</option>
-                <option value="1">1 일</option>
-                <option value="2">2 일</option>
                 <option value="3">3 일</option>
-                <option value="4">4 일</option>
                 <option value="5">5 일</option>
-                <option value="6">6 일</option>
                 <option value="7">7 일</option>
-              </select>
-            </div>
-            <div class="col-sm-2">
-              <select class="form-control" id="sel1">
-                <option hidden>시</option>
-                <option value="1">1 시간</option>
-                <option value="2">2 시간</option>
-                <option value="3">3 시간</option>
-                <option value="4">4 시간</option>
-                <option value="5">5 시간</option>
-                <option value="6">6 시간</option>
-                <option value="7">7 시간</option>
-                <option value="8">8 시간</option>
-                <option value="9">9 시간</option>
-                <option value="10">10 시간</option>
-                <option value="11">11 시간</option>
-                <option value="12">12 시간</option>
-              </select>
-            </div>
-            <div class="col-sm-2">
-              <select class="form-control" id="sel1">
-                <option hidden>분</option>
-                <option value="0">0 분</option>
-                <option value="15">15 분</option>
-                <option value="30">30 분</option>
-                <option value="45">45 분</option>
-
               </select>
             </div>
           </div>
@@ -121,7 +90,7 @@
       <div id="summernote">
       </div>
       <form role="form" method="post" onsubmit="postForm()"><input type='submit' class="btn btn-primary pull-right"
-          value='등록'>
+          value='등록' style="margin-bottom: 10vw">
       </form>
       <script>
         $(document).ready(function () {
@@ -137,6 +106,21 @@
     </div>
   </div>
   <!-- /.container -->
+
+  <script type="text/javascript">
+    function init(){
+    var doc = document.getElementById('content');
+    if(doc.offsetHeight == 0){
+    } else {
+      pageheight = doc.offsetHeight;
+      parent.document.getElementById("contentFrame").height = pageheight+"px";
+    }
+    }
+    window.onload = function(){
+    init();
+    }
+    </script>
+
 </body>
 
 </html>
