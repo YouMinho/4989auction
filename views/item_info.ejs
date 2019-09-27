@@ -9,7 +9,7 @@
   <div class="container">
 
     <!-- Page Heading/Breadcrumbs -->
-    <h1 class="mt-4 mb-3">물건이름</h1>
+    <h1 class="mt-4 mb-3"><%=article.title%></h1>
 
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
@@ -32,7 +32,7 @@
           <div class="input-group" style="width: 450px;">
             <div style="display: inline-block; width: 350px;">
               <span style="font-size: 30px;">현재가격 : </span>
-              <span style="font-size: 35px;">3,000,000</span></div>
+              <span style="font-size: 35px;"><%=article.max_price %></span></div>
             <button style="margin-left: 5px; margin-top: 10px; height: 38px;" class="btn btn-secondary" type="button">입찰하기!</button>
           </div>
           <div style="color : gray; font-size: 80%; padding: 5px 0 0 20px;">※ 주의사항 : ㄹㄴㅇㄹㄴㅇㄹㅇㄴㄹㄴㅇ</div><br>
@@ -54,8 +54,8 @@
             </td>
             <td>
               <ul>
-                <li>아이디 : fsdfssfd</li>
-                <li>연락처 : 010-1234-1234</li>
+                <li>아이디 : <%=article.seller_id %></li>
+                <li>연락처 : <%=article.phone %></li>
               </ul>
             </td>
           </tr>
@@ -65,19 +65,9 @@
 
     </div>
     <!-- /.row -->
-    <div class="row" style="padding: 15px; border-top: 1.5px solid gray;">
+    <div style="padding: 15px; border-top: 1.5px solid gray;">
       <h3>상세설명</h3>
-      <div style="overflow-y:scroll; height: 250px;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus
-        dolorum totam vitae corrupti. Exercitationem ullam nihil porro odio recusandae iusto, alias obcaecati
-        accusantium repellendus, quidem sequi a, in perferendis. Impedit? Lorem ipsum dolor sit amet consectetur
-        adipisicing elit. Id maxime at et, ex facere vitae itaque. Officia rem quis iste eius provident ut atque!
-        Accusantium eaque aliquid autem consequuntur quod. Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-        Iste tempora ducimus saepe! Cum nemo tempore qui et corrupti commodi at, iure itaque. Ullam, odio quam nam eos
-        molestias quidem nulla! Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem minus amet saepe
-        aliquid libero numquam vero itaque maxime eaque delectus deserunt omnis aut, officia, necessitatibus asperiores
-        tempora! Velit, facere odio! Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta ipsam culpa saepe
-        aliquam corrupti impedit vero nisi maiores quas officia! Sed neque vel dolores voluptates ullam eum voluptate
-        quae expedita! lo</div>
+      <div style="overflow-y:scroll; height: 250px;"><%=article.content%></div>
     </div>
 
     <!-- Our Customers -->

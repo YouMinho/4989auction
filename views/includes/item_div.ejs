@@ -1,17 +1,19 @@
-<div class="col-lg-4 col-sm-6 portfolio-item">
-    <div class="hovereffect">
-        <img src="http://placehold.it/700x400" alt="">
-        <div class="overlay">
-            <a class="info" href="/item_info">
-                <div>
-                    <span>현재가격 : </span>
-                    <span>3,000,000</span>
-                </div>
-                <div>
-                    <span>남은시간 : </span>
-                    <span>5일 17시간 14분 34초</span>
-                </div>
-            </a>
+<% for(let i = 0; i < 3; i++) { %>
+    <div class="col-lg-4 col-sm-6 portfolio-item">
+        <div class="hovereffect">
+            <img src="http://placehold.it/700x400" alt="">
+            <div class="overlay">
+                <a class="info" href="/item_info/<%= article[i].id %>">
+                    <div>
+                        <span>현재가격 : </span>
+                        <span><%=article[i].hit %></span>
+                    </div>
+                    <div>
+                        <span>남은시간 : </span>
+                        <span>5일 17시간 14분 34초</span>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
-</div>
+<% } %>

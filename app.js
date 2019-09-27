@@ -28,7 +28,20 @@ connection.connect((err) => {
 //-----------DB------------------
 
 app.get('/', (req, res) => {
-    res.render('main', {category: 'ALL'})
+    let hot_item = `
+        select id, hit
+        from item
+        order by hit desc
+    `
+    connection.query(hot_item, (err, results, fields) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Internal Server Error!!!')           
+        }
+        console.log(results);
+        
+        res.render('main', {article: results, category: 'ALL'})
+    })
 })
 
 app.get('/login', (req, res) => {
@@ -48,8 +61,21 @@ app.get('/main/:category', (req, res) => {
     res.render('main', {category: category})
 })
 
-app.get('/item_info', (req, res) => {
-    res.render('item_info')
+app.get('/item_info/:num', (req, res) => {
+    let num = req.params.num
+        let item_select = `
+        select i.max_price, i.title, i.content, i.seller_id, u.phone
+        from item i, users u
+        where i.seller_id = u.id
+        and i.id = ?
+    `
+    connection.query(item_select, [num], (err, results, fields) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Internal Server Error!!!')           
+        }
+        res.render('item_info', {article: results[0]})
+    })
 })
 app.get('/signup', (req, res) => {
     res.render('signup')
