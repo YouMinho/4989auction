@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Modern Business - Start Bootstrap Template</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="css/modern-business.css" rel="stylesheet">
+
+  <!-- summernote -->
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
+  <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote.css" rel="stylesheet">
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote.js"></script>
+
+</head>
+
+<body style="padding:0px;">
+  
+  <!-- Page Content -->
+  <div class="container mb-4">
+    <!-- Page Heading/Breadcrumbs -->
+    <form class="form-horizontal">
+        <h1 style="margin-bottom: 2%; margin-left: 3%">물품등록</h1>
+      <div class="form-group">
+        <label class="col-sm-2 control-label">카테고리<span class="mandatory">*</span></label>
+        <div class="col-sm-10">
+          <select class="form-control" id="sel1">
+            <option hidden>카테고리를 선택하세요</option>
+            <option>패션</option>
+            <option>생필품</option>
+            <option>취미</option>
+            <option>디지털/IT</option>
+            <option>기타</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-2 control-label">제목<span class="mandatory">*</span></label>
+        <div class="col-sm-10">
+          <input class="form-control" id="focusedInput" type="text" placeholder="제목을 입력하세요">
+        </div>
+      </div>
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">시작가격<span class="mandatory">*</span></label>
+            <div class="col-sm-10">
+              <input class="form-control" id="focusedInput" type="text" placeholder="시작가격을 입력하세요">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">상한가<span class="mandatory">*</span></label>
+            <div class="col-sm-10">
+              <input class="form-control" id="focusedInput" type="text" placeholder="상한가를 입력하세요">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">경매시간<span class="mandatory">*</span></label>
+            <div class="col-sm-2">
+              <select class="form-control" id="sel1">
+                <option hidden>일</option>
+                <option value="1">1 일</option>
+                <option value="2">2 일</option>
+                <option value="3">3 일</option>
+                <option value="4">4 일</option>
+                <option value="5">5 일</option>
+                <option value="6">6 일</option>
+                <option value="7">7 일</option>
+              </select>
+            </div>
+            <div class="col-sm-2">
+              <select class="form-control" id="sel1">
+                <option hidden>시</option>
+                <option value="1">1 시간</option>
+                <option value="2">2 시간</option>
+                <option value="3">3 시간</option>
+                <option value="4">4 시간</option>
+                <option value="5">5 시간</option>
+                <option value="6">6 시간</option>
+                <option value="7">7 시간</option>
+                <option value="8">8 시간</option>
+                <option value="9">9 시간</option>
+                <option value="10">10 시간</option>
+                <option value="11">11 시간</option>
+                <option value="12">12 시간</option>
+              </select>
+            </div>
+            <div class="col-sm-2">
+              <select class="form-control" id="sel1">
+                <option hidden>분</option>
+                <option value="0">0 분</option>
+                <option value="15">15 분</option>
+                <option value="30">30 분</option>
+                <option value="45">45 분</option>
+
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">메인사진</label>
+            <input class="col-8 mt-2" type="file" id="input-main-img"
+              accept="image/x-png,image/png,image/jpg,image/jpeg,image/gif">
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="add_item">
+      <textarea name="content" style="display: none"></textarea>
+      <div id="summernote">
+      </div>
+      <form role="form" method="post" onsubmit="postForm()"><input type='submit' class="btn btn-primary pull-right"
+          value='등록'>
+      </form>
+      <script>
+        $(document).ready(function () {
+          $('#summernote').summernote({
+            height: 500,
+            lang: 'ko-KR'
+          });
+        });
+        function postForm() {
+          $('textarea[name="content"]').val($('#summernote').summernote('code'));
+        }
+      </script>
+    </div>
+  </div>
+  <!-- /.container -->
+</body>
+
+</html>
