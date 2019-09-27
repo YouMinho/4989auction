@@ -1,8 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
+const multer  = require('multer')
 
 const app = express();
+var upload = multer({ dest: 'uploads/' });
 
 app.locals.pretty = true;
 app.use(bodyParser.urlencoded({ extended: false }));
