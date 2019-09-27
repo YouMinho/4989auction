@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mysql = require('mysql');
+
 const app = express();
 
 app.locals.pretty = true;
@@ -7,6 +9,23 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
 app.set('views', './views');
 app.set('view engine', 'ejs');
+
+//-----------DB------------------
+const connection = mysql.createConnection({
+	host: '183.101.196.138',
+	user: 'admin4989',
+	password: 'admin4989',
+	database: 'auction4989'
+});
+
+connection.connect((err) => {
+    if (err) { 
+        console.log(err);
+        throw err;
+    }
+    console.log('connerct success : ' + connection.threadId);
+});
+//-----------DB------------------
 
 app.get('/', (req, res) => {
     res.render('main', {category: 'ALL'})
