@@ -39,6 +39,10 @@ app.get('/item_add', (req, res) => {
     res.render('item_add')
 })
 
+app.get('/item_add_content', (req, res) => {
+    res.render('item_add_content')
+})
+
 app.get('/main/:category', (req, res) => {
     var category = req.params.category
     res.render('main', {category: category})
