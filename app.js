@@ -66,16 +66,17 @@ app.get('/main/:category', (req, res) => {
 app.get('/item_info/:num', (req, res) => {
     let num = req.params.num
         let item_select = `
-        select i.max_price, i.title, i.content, i.seller_id, u.phone
+        select format(i.max_price, 0) price, timediff(i.end_time, now()) time, i.title, i.content, i.seller_id, u.phone
         from item i, users u
-        where i.seller_id = u.id
-        and i.id = ?
+        where i.id = ?
     `
     connection.query(item_select, [num], (err, results, fields) => {
         if (err) {
             console.log(err);
             res.status(500).send('Internal Server Error!!!')           
         }
+        console.log(results);
+        
         res.render('item_info', {article: results[0]})
     })
 })
