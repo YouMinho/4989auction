@@ -12,7 +12,7 @@
     <!-- Page Heading/Breadcrumbs -->
     <h2>LOGIN</h2>
     <p>Wellcome 4989</p>
-    <form action="/action_page.php">
+    <form method="POST" action="/login">
       <div class="form-group">
         <label for="usr">Name:</label>
         <input type="text" class="form-control" id="usr" name="username">
@@ -37,6 +37,9 @@
   <!-- Bootstrap core JavaScript -->
   <script src="/vendor/jquery/jquery.min.js"></script>
   <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <% if(pass == false) { %>
+    <script type="text/javascript">alert("아이디 또는 비밀번호가 잘못되었습니다.");</script>
+  <% } %>>
   </div>
 </body>
 

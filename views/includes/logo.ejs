@@ -29,7 +29,11 @@
                     <a class="nav-link" href="/main/etc">기타</a>
                 </li>
             </ul>
-            <a href="/login"><button class="btn btn-primary" type="button">로그인</button></a>
+            <% if(user.userid){ %>
+                <a href="/logout"><button class="btn btn-primary" type="button" id="logout">로그아웃</button></a>
+            <% } else { %>
+                <a href="/login"><button class="btn btn-primary" type="button" id="login">로그인</button></a>
+            <% } %>
         </div>
     </div>
 </nav>
