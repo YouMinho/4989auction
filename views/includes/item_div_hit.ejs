@@ -1,16 +1,16 @@
-<% for(let i = 0; i < c_article.length; i++) { %>
+<% for(let i = 0; i < 3; i++) { %>
     <div class="col-lg-4 col-sm-6 portfolio-item">
         <div class="hovereffect">
             <img src="http://placehold.it/700x400" alt="">
             <div class="overlay">
-                <a class="info" href="/item_info/<%= c_article[i].id %>">
+                <a class="info" href="/item_info/<%= h_article[i].id %>">
                     <div>
                         <span>현재가격 : </span>
-                        <span><%=c_article[i].price %></span>
+                        <span><%= h_article[i].price %></span>
                     </div>
                     <div>
                         <span>남은시간 : </span>
-                        <span><%= c_article[i].time %></span>
+                        <span><%= h_article[i].time %></span>
                     </div>
                 </a>
             </div>
