@@ -157,8 +157,44 @@ app.post('/signup', (req, res) => {
 });
 
 app.get('/find_idpw', (req, res) => {
-    res.render('find_idpw')
-})
+    res.render('find_idpw', { msg: "정확하게 입력하세요." });
+});
+
+app.post('/find_idpw', (req, res) => {
+    const sess = req.session;
+
+    let name = req.body.name;
+    let email = req.body.emailid + "@" + req.body.emaildomain;
+    
+    let values = [name, email];
+    let find_idpw_query = `
+	select *
+    from users
+    where name=? and email=?;
+	`;
+    connection.query(find_idpw_query, values, (err, results) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Internal Server Error!!!')
+        }
+
+        console.log(results);
+        if (results.length == 1) {
+            sess.userid = results[0].id;
+            sess.name = results[0].name;
+            sess.grade = results[0].grade;
+            req.session.save(() => {
+                res.redirect('/mypage');
+            });
+        } else {
+            res.render('find_inpw', { msg: "등록된 계정이 없습니다." });
+        }
+    })
+});
+
+app.get('/mypage', (req, res) => {
+    res.render('mypage');
+});
 
 app.listen(8888, () => {
     console.log('8888 port opened!!!');
