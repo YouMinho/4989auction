@@ -42,7 +42,36 @@ connection.connect((err) => {
 });
 //-----------DB------------------
 
-app.get(['/','/:category'], (req, res) => {
+app.get('/', (req, res) => {
+    let category = req.params.category;
+    sess = req.session;
+    let hot_item = `
+        select id, hit, format(max_price, 0) price, timediff(end_time, now()) time
+        from item
+        order by hit desc
+    `;
+    let category_item = `
+        select id, category, hit, format(max_price, 0) price, timediff(end_time, now()) time
+        from item
+        order by id desc
+    `;
+    
+    connection.query(hot_item, (err, h_results, fields) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Internal Server Error!!!')
+        }
+        connection.query(category_item, (err, c_results, fields) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send('Internal Server Error!!!')
+            }            
+            res.render('main', { h_article: h_results, c_article: c_results, category: 'ALL' });
+        })
+    })
+})
+
+app.get('/:category', (req, res) => {
     let category = req.params.category;
     sess = req.session;
     let hot_item = `
@@ -56,18 +85,18 @@ app.get(['/','/:category'], (req, res) => {
         where category = ?
         order by id desc
     `;
+    
     connection.query(hot_item, (err, h_results, fields) => {
         if (err) {
             console.log(err);
             res.status(500).send('Internal Server Error!!!')
         }
-        
         connection.query(category_item, [category], (err, c_results, fields) => {
             if (err) {
                 console.log(err);
                 res.status(500).send('Internal Server Error!!!')
             }            
-            res.render('main', { h_article: h_results, c_article: c_results ,category: category });
+            res.render('main', { h_article: h_results, c_article: c_results, category: category });
         })
     })
 })
@@ -117,23 +146,6 @@ app.get('/item_add', (req, res) => {
 app.get('/item_add_content', (req, res) => {
     res.render('item_add_content')
 })
-
-// app.get('/:category', (req, res) => {
-//     let category = req.params.category;
-//     let category_item = `
-//         select id, category, hit, format(max_price, 0) price, timediff(end_time, now()) time
-//         from item
-//         where category = ?
-//         order by id desc
-//     `;
-//     connection.query(category_item, [category], (err, results, fields) => {
-//         if (err) {
-//             console.log(err);
-//             res.status(500).send('Internal Server Error!!!')
-//         }
-//         res.render('main', { article: results, category: category });
-//     })
-// })
 
 app.get('/item_info/:num', (req, res) => {
     let num = req.params.num
