@@ -71,7 +71,7 @@ app.get('/', (req, res) => {
     })
 })
 
-app.get('/:category', (req, res) => {
+app.get('/main/:category', (req, res) => {
     let category = req.params.category;
     sess = req.session;
     let hot_item = `
@@ -146,6 +146,24 @@ app.get('/item_add', (req, res) => {
 app.get('/item_add_content', (req, res) => {
     res.render('item_add_content')
 })
+
+app.post('/item_add_content', (req, res) => {
+	let values = [req.body.category, req.body.title, req.body.content, req.body.min_price, req.body.max_price];
+	let item_insert = `
+		insert into item (category, title, content, min_price, max_price, start_time, end_time)
+		values (?, ?, ?, ?, ?, now(), DATE_ADD(NOW(), INTERVAL 7 DAY))
+    `;
+    console.log(values);
+
+	connection.query(item_insert, values, (err, result) => {
+		if(err) {
+			console.log(err);
+			res.status(500).send('Internal Server Error!!!');
+		}
+		console.log('result : ', result);
+		res.redirect('/item_info/' + result.insertId);
+	});
+});
 
 app.get('/item_info/:num', (req, res) => {
     let num = req.params.num
