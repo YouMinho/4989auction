@@ -118,6 +118,24 @@ app.get('/item_add_content', (req, res) => {
     res.render('item_add_content')
 })
 
+app.post('/item_add_content', (req, res) => {
+	let values = [req.body.category, req.body.title, req.body.content, req.body.min_price, req.body.max_price];
+	let item_insert = `
+		insert into item (category, title, content, min_price, max_price, start_time, end_time)
+		values (?, ?, ?, ?, ?, now(), DATE_ADD(NOW(), INTERVAL 7 DAY))
+    `;
+    console.log(values);
+
+	connection.query(item_insert, values, (err, result) => {
+		if(err) {
+			console.log(err);
+			res.status(500).send('Internal Server Error!!!');
+		}
+		console.log('result : ', result);
+		res.redirect('/item_info/' + result.insertId);
+	});
+});
+
 // app.get('/:category', (req, res) => {
 //     let category = req.params.category;
 //     let category_item = `
