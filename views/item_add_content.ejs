@@ -27,11 +27,10 @@
 </head>
 
 <body style="padding:0px;">
-
   <!-- Page Content -->
   <div class="container mb-4" id="content">
     <!-- Page Heading/Breadcrumbs -->
-    <form class="form-horizontal" action="/item_add_content" method="post">
+    <form class="form-horizontal" name="content_form" method="post" onkeydown="return captureReturnKey(event)">
       <div class="form-group">
         <label class="col-sm-2 control-label">카테고리</label>
         <div class="col-sm-10">
@@ -74,12 +73,10 @@
       </div>
 
       <div class="add_item">
-        <textarea class="form-control" id="content" name="content" style="display: none"></textarea>
-        <div id="summernote">
+        <textarea id="summernote" name="content"></textarea>
+        <div style="text-align: right">
+          <button type="submit" class="btn btn-primary" onClick="checkForm()" onsubmit="return true;">등록</button>
         </div>
-        <form role="form" method="post" onsubmit="postForm()"><input type='submit' class="btn btn-primary pull-right"
-            value='등록' style="margin-bottom: 20px">
-        </form>
         <script>
           $(document).ready(function () {
             $('#summernote').summernote({
@@ -87,14 +84,19 @@
               lang: 'ko-KR'
             });
           });
-          function postForm() {
-            $('textarea[name="content"]').html($('.summernote').code());
-          }
         </script>
       </div>
     </form>
   </div>
   <!-- /.container -->
 </body>
+
+<script>
+  // iframe parent window 
+  function checkForm(){ 
+      document.content_form.target="_parent"; 
+      document.content_form.submit(); 
+  } 
+  </script>
 
 </html>

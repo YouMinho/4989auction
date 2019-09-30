@@ -17,7 +17,7 @@ app.use(session({
     saveUninitialized: true
 }));
 
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
     res.locals.user = req.session;
     next();
 });
@@ -54,7 +54,7 @@ app.get('/', (req, res) => {
         from item
         order by id desc
     `;
-    
+
     connection.query(hot_item, (err, h_results, fields) => {
         if (err) {
             console.log(err);
@@ -64,7 +64,7 @@ app.get('/', (req, res) => {
             if (err) {
                 console.log(err);
                 res.status(500).send('Internal Server Error!!!')
-            }            
+            }
             res.render('main', { h_article: h_results, c_article: c_results, category: 'ALL' });
         })
     })
@@ -84,7 +84,7 @@ app.get('/main/:category', (req, res) => {
         where category = ?
         order by id desc
     `;
-    
+
     connection.query(hot_item, (err, h_results, fields) => {
         if (err) {
             console.log(err);
@@ -94,7 +94,7 @@ app.get('/main/:category', (req, res) => {
             if (err) {
                 console.log(err);
                 res.status(500).send('Internal Server Error!!!')
-            }            
+            }
             res.render('main', { h_article: h_results, c_article: c_results, category: category });
         })
     })
@@ -109,10 +109,10 @@ app.post('/login', (req, res) => {
     const sess = req.session;
     let values = [req.body.username, req.body.password];
     let login_query = `
-	select *
+    select *
     from users
     where id=? and password=?;
-	`;
+    `;
     connection.query(login_query, values, (err, results) => {
         if (err) {
             console.log(err);
@@ -140,6 +140,7 @@ app.get('/logout', (req, res) => {
 
 app.get('/item_add', (req, res) => {
     res.render('item_add')
+    let seller_id = req.session.userid;
 })
 
 app.get('/item_add_content', (req, res) => {
@@ -147,21 +148,22 @@ app.get('/item_add_content', (req, res) => {
 })
 
 app.post('/item_add_content', (req, res) => {
-	let values = [req.body.category, req.body.title, req.body.content, req.body.min_price, req.body.max_price];
+    let seller_id = req.session.userid;
+	let values = [seller_id, req.body.category, req.body.title, req.body.content, req.body.min_price, req.body.max_price];
 	let item_insert = `
-		insert into item (category, title, content, min_price, max_price, start_time, end_time)
-		values (?, ?, ?, ?, ?, now(), DATE_ADD(NOW(), INTERVAL 7 DAY))
+		insert into item (seller_id, category, title, content, min_price, max_price, start_time, end_time)
+		values (?, ?, ?, ?, ?, ?, now(), DATE_ADD(NOW(), INTERVAL 7 DAY))
     `;
     console.log(values);
 
-	connection.query(item_insert, values, (err, result) => {
-		if(err) {
-			console.log(err);
-			res.status(500).send('Internal Server Error!!!');
-		}
-		console.log('result : ', result);
-		res.redirect('/item_info/' + result.insertId);
-	});
+    connection.query(item_insert, values, (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Internal Server Error!!!');
+        }
+        console.log('result : ', result);
+        res.redirect('/item_info/' + result.insertId);
+    });
 });
 
 app.get('/item_info/:num', (req, res) => {
@@ -183,6 +185,7 @@ app.get('/item_info/:num', (req, res) => {
     });
 });
 
+
 app.get('/signup', (req, res) => {
     res.render('signup');
 });
@@ -200,19 +203,19 @@ app.post('/signup', (req, res) => {
     let tel3 = req.body.tel3;
     let address = req.body.address;
 
-	let values = [id, password, "G", name, emailid, emaildomain, tel1, tel2, tel3, address];
-	let users_insert = `
-	insert into users (id, password, grade, name, emailid, emaildomain, tel1, tel2, tel3, address)
-	values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`;
-	connection.query(users_insert, values, (err, result) => {
+    let values = [id, password, "G", name, emailid, emaildomain, tel1, tel2, tel3, address];
+    let users_insert = `
+    insert into users (id, password, grade, name, emailid, emaildomain, tel1, tel2, tel3, address)
+    values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    connection.query(users_insert, values, (err, result) => {
         sess.userid = id;
         sess.name = name;
         sess.grade = "G";
         req.session.save(() => {
             res.redirect('/');
         });
-	});
+    });
 });
 
 app.get('/find_idpw', (req, res) => {
@@ -225,13 +228,13 @@ app.post('/find_idpw', (req, res) => {
     let name = req.body.name;
     let emailid = req.body.emailid;
     let emaildomain = req.body.emaildomain;
-    
+
     let values = [name, emailid, emaildomain];
     let find_idpw_query = `
-	select *
+    select *
     from users
     where name=? and emailid=? and emaildomain=?;
-	`;
+    `;
     connection.query(find_idpw_query, values, (err, results) => {
         if (err) {
             console.log(err);
@@ -257,15 +260,27 @@ app.get('/mypage', (req, res) => {
         select *
         from users
         where id = ?
-    `
+    `;
+    let item_data_query = `
+        select *
+        from item
+        where seller_id = ?
+    `;
+
     connection.query(user_data_query, [userid], (err, results, fields) => {
         if (err) {
             console.log(err);
             res.status(500).send('Internal Server Error!!!')
         }
-
-        res.render('mypage', { article: results[0] })
-    })
+        connection.query(item_data_query, [userid], (err, itemresults, fields) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send('Internal Server Error!!!')
+            }
+            console.log(itemresults);
+            res.render('mypage', { article: results[0], itresult: itemresults });
+        });
+    });
 });
 
 app.post('/mypage', (req, res) => {
@@ -282,14 +297,14 @@ app.post('/mypage', (req, res) => {
     let address = req.body.address;
 
     console.log(req.body);
-	let values = [password, name, emailid, emaildomain, tel1, tel2, tel3, address, id];
-	let users_update = `
+    let values = [password, name, emailid, emaildomain, tel1, tel2, tel3, address, id];
+    let users_update = `
     update users set
     password=?, name=?, emailid=?, emaildomain=?, 
     tel1=?, tel2=?, tel3=?, address=?
     where id=?
-	`;
-	connection.query(users_update, values, (err, result) => {
+    `;
+    connection.query(users_update, values, (err, result) => {
         if (err) {
             console.log(err);
             res.status(500).send('Internal Server Error!!!')
@@ -300,7 +315,7 @@ app.post('/mypage', (req, res) => {
         req.session.save(() => {
             res.redirect('/');
         });
-	});
+    });
 });
 
 app.listen(8888, () => {
