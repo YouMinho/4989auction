@@ -168,7 +168,7 @@ app.post('/item_add_content', (req, res) => {
 app.get('/item_info/:num', (req, res) => {
     let num = req.params.num
     let item_select = `
-        select format(i.max_price, 0) price, timediff(i.end_time, now()) time, i.title, i.content, i.seller_id, u.phone
+        select format(i.max_price, 0) price, timediff(i.end_time, now()) time, i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3
         from item i, users u
         where i.id = ?
         and u.id = i.seller_id
@@ -178,6 +178,8 @@ app.get('/item_info/:num', (req, res) => {
             console.log(err);
             res.status(500).send('Internal Server Error!!!')
         }
+        console.log(results[0]);
+        
         res.render('item_info', { article: results[0] })
     })
 })
@@ -237,7 +239,6 @@ app.post('/find_idpw', (req, res) => {
             res.status(500).send('Internal Server Error!!!')
         }
 
-        console.log(results);
         if (results.length == 1) {
             sess.userid = results[0].id;
             sess.name = results[0].name;
@@ -252,7 +253,55 @@ app.post('/find_idpw', (req, res) => {
 });
 
 app.get('/mypage', (req, res) => {
-    res.render('mypage');
+    let userid = req.session.userid;
+    let user_data_query = `
+        select *
+        from users
+        where id = ?
+    `
+    connection.query(user_data_query, [userid], (err, results, fields) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Internal Server Error!!!')
+        }
+
+        res.render('mypage', { article: results[0] })
+    })
+});
+
+app.post('/mypage', (req, res) => {
+    const sess = req.session;
+
+    let id = sess.userid;
+    let name = req.body.name;
+    let password = req.body.pass;
+    let emailid = req.body.emailid;
+    let emaildomain = req.body.emaildomain;
+    let tel1 = req.body.tel1;
+    let tel2 = req.body.tel2;
+    let tel3 = req.body.tel3;
+    let address = req.body.address;
+
+    console.log(req.body);
+	let values = [password, name, emailid, emaildomain, tel1, tel2, tel3, address, id];
+	let users_update = `
+    update users set
+    password=?, name=?, emailid=?, emaildomain=?, 
+    tel1=?, tel2=?, tel3=?, address=?
+    where id=?
+	`;
+	connection.query(users_update, values, (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Internal Server Error!!!')
+        }
+        sess.userid = id;
+        sess.name = name;
+        sess.grade = "G";
+        req.session.save(() => {
+            res.redirect('/');
+        });
+	});
 });
 
 app.listen(8888, () => {

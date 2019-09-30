@@ -30,6 +30,7 @@
                 </li>
             </ul>
             <% if(user.userid){ %>
+                <a href="/mypage"><button class="btn btn-primary" type="button" id="mypage">my page</button></a>
                 <a href="/logout"><button class="btn btn-primary" type="button" id="logout">로그아웃</button></a>
             <% } else { %>
                 <a href="/login"><button class="btn btn-primary" type="button" id="login">로그인</button></a>

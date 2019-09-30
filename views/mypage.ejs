@@ -9,14 +9,14 @@
     <div class="container" align="center" style="margin-top: 70px">
         <div class="col-lg-6" align="center">
             <h2>개인정보 수정</h2>
-            <form id="memberform" method="post" action="">
+            <form id="userUpdateform" method="post" action="/mypage">
                 <div class="form-group" align="left">
                     <label for="name">이름</label>
-                    <input type="text" class="form-control" id="name" name="name" placeholder="">
+                    <input type="text" class="form-control" id="name" name="name" placeholder="" value="<%=article.name%>">
                 </div>
                 <div class="form-group" align="left">
                     <label for="">아이디</label>
-                    <input type="text" class="form-control" id="id" name="id" onkeyup="javascript:idcheck();" placeholder="">
+                    <input type="text" class="form-control" id="id" name="id" onkeyup="javascript:idcheck();" placeholder="" value="<%=article.id%>">
                     <div id="resultview"></div>
                 </div>
                 <div class="form-group" align="left">
@@ -30,8 +30,9 @@
                 <div class="form-group" align="left">
                     <label for="email">이메일</label><br>
                     <div id="email" class="custom-control-inline">
-                        <input type="text" class="form-control" id="emailid" name="emailid" placeholder="" size="25"> @
-                        <select class="form-control" id="emaildomain" name="emaildomain">
+                        <input type="text" class="form-control" id="emailid" name="emailid" placeholder="" size="25" value="<%=article.emailid%>"> 
+                        @
+                        <select class="form-control" id="emaildomain" name="emaildomain" value="<%=article.emaildomain%>">
                             <option value="naver.com">naver.com</option>
                             <option value="google.com">google.com</option>
                             <option value="daum.net">daum.net</option>
@@ -43,7 +44,7 @@
                 <div class="form-group" align="left">
                     <label for="tel">전화번호</label>
                     <div id="tel" class="custom-control-inline">
-                        <select class="form-control" id="tel1" name="tel1">
+                        <select class="form-control" id="tel1" name="tel1" value="<%=article.tel1%>">
                             <option value="010">010</option>
                             <option value="02">02</option>
                             <option value="031">031</option>
@@ -52,17 +53,16 @@
                             <option value="051">051</option>
                             <option value="061">061</option>
                         </select> _
-                        <input type="text" class="form-control" id="tel2" name="tel2" placeholder=""> _
-                        <input type="text" class="form-control" id="tel3" name="tel3" placeholder="">
+                        <input type="text" class="form-control" id="tel2" name="tel2" value="<%=article.tel2%>"> _
+                        <input type="text" class="form-control" id="tel3" name="tel3" value="<%=article.tel3%>">
                     </div>
                 </div>
                 <div class="form-group" align="left">
                     <label for="">주소</label><br>
-                    <input type="text" class="form-control" id="address" name="address" placeholder="">
+                    <input type="text" class="form-control" id="address" name="address" placeholder="" value="<%=article.address%>">
                 </div>
                 <div class="form-group" align="center">
-                    <button type="button" class="btn btn-primary" id="registerBtn">수정</button>
-                    <button type="reset" class="btn btn-warning">초기화</button>
+                    <button type="submit" class="btn btn-primary" id="updateBtn">수정</button>
                 </div>
             </form>
         </div>
@@ -197,7 +197,7 @@
 </div>
     
     <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
-    <script src="./js/mypg.js"></script>
+    <script src="/js/mypg.js"></script>
     <script type="text/javascript">
     $(function() {
         carouseller1 = new carousel('.carouseller1');
