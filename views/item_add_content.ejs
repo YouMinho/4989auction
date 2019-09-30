@@ -74,9 +74,8 @@
       </div>
 
       <div class="add_item">
-        <textarea class="form-control" id="content" name="content" style="display: none"></textarea>
-        <div id="summernote">
-        </div>
+        <!-- <textarea class="form-control" id="content" name="content" style="display: none"></textarea> -->
+        <textarea id="summernote" name="content"></textarea>
         <form role="form" method="post" onsubmit="postForm()"><input type='submit' class="btn btn-primary pull-right"
             value='등록' style="margin-bottom: 20px">
         </form>
@@ -87,9 +86,6 @@
               lang: 'ko-KR'
             });
           });
-          function postForm() {
-            $('textarea[name="content"]').html($('.summernote').code());
-          }
         </script>
       </div>
     </form>
