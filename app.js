@@ -141,6 +141,7 @@ app.get('/logout', (req, res) => {
 
 app.get('/item_add', (req, res) => {
     res.render('item_add')
+    let seller_id = req.session.userid;
 })
 
 app.get('/item_add_content', (req, res) => {
