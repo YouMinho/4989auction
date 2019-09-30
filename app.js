@@ -192,14 +192,17 @@ app.post('/signup', (req, res) => {
     let id = req.body.id;
     let name = req.body.name;
     let password = req.body.pass;
-    let email = req.body.emailid + "@" + req.body.emaildomain;
-    let phone = req.body.tel1 + req.body.tel2 + req.body.tel3;
+    let emailid = req.body.emailid;
+    let emaildomain = req.body.emaildomain;
+    let tel1 = req.body.tel1;
+    let tel2 = req.body.tel2;
+    let tel3 = req.body.tel3;
     let address = req.body.address;
 
-	let values = [id, password, "G", name, email, phone, address];
+	let values = [id, password, "G", name, emailid, emaildomain, tel1, tel2, tel3, address];
 	let users_insert = `
-	insert into users (id, password, grade, name, email, phone, address)
-	values(?, ?, ?, ?, ?, ?, ?)
+	insert into users (id, password, grade, name, emailid, emaildomain, tel1, tel2, tel3, address)
+	values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`;
 	connection.query(users_insert, values, (err, result) => {
         sess.userid = id;
@@ -219,13 +222,14 @@ app.post('/find_idpw', (req, res) => {
     const sess = req.session;
 
     let name = req.body.name;
-    let email = req.body.emailid + "@" + req.body.emaildomain;
+    let emailid = req.body.emailid;
+    let emaildomain = req.body.emaildomain;
     
-    let values = [name, email];
+    let values = [name, emailid, emaildomain];
     let find_idpw_query = `
 	select *
     from users
-    where name=? and email=?;
+    where name=? and emailid=? and emaildomain=?;
 	`;
     connection.query(find_idpw_query, values, (err, results) => {
         if (err) {
