@@ -22,7 +22,9 @@
                     <button class="btn btn-secondary" type="button">검색</button>
                 </div>
                 <div class="col-6 text-right">
-                    <a href="/item_add"><button class="btn btn-secondary" type="button">물품 올리기</button></a>
+                    <% if(user.userid) { %>
+                    <a href="/item_add"><button class="btn btn-secondary" type="button">물품 올리기</button></a> 
+                    <% }%>
                 </div>
             </div>
 
