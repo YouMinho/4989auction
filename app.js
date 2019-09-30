@@ -148,18 +148,11 @@ app.get('/item_add_content', (req, res) => {
 })
 
 app.post('/item_add_content', (req, res) => {
-<<<<<<< HEAD
     let seller_id = req.session.userid;
 	let values = [seller_id, req.body.category, req.body.title, req.body.content, req.body.min_price, req.body.max_price];
 	let item_insert = `
 		insert into item (seller_id, category, title, content, min_price, max_price, start_time, end_time)
 		values (?, ?, ?, ?, ?, ?, now(), DATE_ADD(NOW(), INTERVAL 7 DAY))
-=======
-    let values = [req.body.category, req.body.title, req.body.content, req.body.min_price, req.body.max_price];
-    let item_insert = `
-        insert into item (seller_id, category, title, content, min_price, max_price, start_time, end_time)
-        values ('test', ?, ?, ?, ?, ?, now(), DATE_ADD(NOW(), INTERVAL 7 DAY))
->>>>>>> 54107f5a61e6bb03b548dd66a3ce5d02182535a6
     `;
     console.log(values);
 
