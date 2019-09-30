@@ -44,14 +44,13 @@ connection.connect((err) => {
 
 app.get('/', (req, res) => {
     let category = req.params.category;
-    sess = req.session;
     let hot_item = `
-        select id, hit, format(max_price, 0) price, timediff(end_time, now()) time
+        select id, hit, format(max_price, 0) price, end_time
         from item
         order by hit desc
     `;
     let category_item = `
-        select id, category, hit, format(max_price, 0) price, timediff(end_time, now()) time
+        select id, category, hit, format(max_price, 0) price, end_time
         from item
         order by id desc
     `;
@@ -168,21 +167,21 @@ app.post('/item_add_content', (req, res) => {
 app.get('/item_info/:num', (req, res) => {
     let num = req.params.num
     let item_select = `
-        select format(i.max_price, 0) price, timediff(i.end_time, now()) time, i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3
+        select i.id, format(i.max_price, 0) price, timediff(i.end_time, now()) time, i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3
         from item i, users u
         where i.id = ?
         and u.id = i.seller_id
-    `
+    `;
     connection.query(item_select, [num], (err, results, fields) => {
         if (err) {
             console.log(err);
-            res.status(500).send('Internal Server Error!!!')
+            res.status(500).send('Internal Server Error!!!');
         }
         console.log(results[0]);
         
-        res.render('item_info', { article: results[0] })
-    })
-})
+        res.render('item_info', { article: results[0]});
+    });
+});
 
 app.get('/signup', (req, res) => {
     res.render('signup');

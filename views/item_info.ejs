@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <%- include('./includes/head.ejs') %>
+<%- include('./includes/head.ejs') %>
 
-  <body>
-          <%- include('./includes/logo.ejs') %>
+<body>
+    <script>
+        function time_load() {
+            $("#time").load('/item_info/<%=article.id%> #time')
+        }
+        $(document).ready(() => {
+
+            setInterval("time_load()", 1000)
+        })
+    </script>
+  <%- include('./includes/logo.ejs') %>
   <!-- Page Content -->
   <div class="container">
 
@@ -24,43 +33,46 @@
         <img class="img-fluid rounded mb-4" src="http://placehold.it/750x450" alt="">
       </div>
       <div class="col-lg-6">
-          <div style= "margin-bottom: 15px; color: red;">
-              <span style="font-size: 30px;">남은시간 : </span>
-              <span style="font-size: 32px;"><%= article.time %></span></div>
-            <div>
-        <div class="card-body" style="padding: 0 15px 0 5px;">
-          <div class="input-group" style="width: 450px;">
-            <div style="display: inline-block; width: 350px;">
-              <span style="font-size: 30px;">현재가격 : </span>
-              <span style="font-size: 35px;"><%=article.price %></span></div>
-            <button style="margin-left: 5px; margin-top: 10px; height: 38px;" class="btn btn-secondary" type="button">입찰하기!</button>
-          </div>
-          <div style="color : gray; font-size: 80%; padding: 5px 0 0 20px;">※ 주의사항 : ㄹㄴㅇㄹㄴㅇㄹㅇㄴㄹㄴㅇ</div><br>
+        <div style="margin-bottom: 15px; color: red;">
+          <span style="font-size: 30px;">남은시간 : </span>
+          <span id="time" style="font-size: 32px;"><%= article.time %></span>
         </div>
-        <div class="card-body" style="padding: 15px 15px 0 5px;">
-          <div class="input-group" style="width: 450px;">
-            <input type="text" style="width: 300px;" class="form-control" placeholder="금액을 입력하세요.">
-            <span class="input-group-btn">
-              <button style="margin-left: 15px;" class="btn btn-secondary" type="button">입찰하기!</button>
-            </span>
+        <div>
+          <div class="card-body" style="padding: 0 15px 0 5px;">
+            <div class="input-group" style="width: 450px;">
+              <div style="display: inline-block; width: 350px;">
+                <span style="font-size: 30px;">현재가격 : </span>
+                <span style="font-size: 35px;"><%=article.price %></span></div>
+              <button style="margin-left: 5px; margin-top: 10px; height: 38px;" class="btn btn-secondary"
+                type="button">입찰하기!</button>
+            </div>
+            <div style="color : gray; font-size: 80%; padding: 5px 0 0 20px;">※ 주의사항 : ㄹㄴㅇㄹㄴㅇㄹㅇㄴㄹㄴㅇ</div><br>
           </div>
-          <div style="color : gray; font-size: 80%; padding-bottom: 20px; padding: 5px 0 0 20px;">※ 주의사항 : ㄹㄴㅇㄹㄴㅇㄹㅇㄴㄹㄴㅇ
-          </div><br>
-        </div>
+          <div class="card-body" style="padding: 15px 15px 0 5px;">
+            <div class="input-group" style="width: 450px;">
+              <input type="text" style="width: 300px;" class="form-control" placeholder="금액을 입력하세요.">
+              <span class="input-group-btn">
+                <button style="margin-left: 15px;" class="btn btn-secondary" type="button">입찰하기!</button>
+              </span>
+            </div>
+            <div style="color : gray; font-size: 80%; padding-bottom: 20px; padding: 5px 0 0 20px;">※ 주의사항 :
+              ㄹㄴㅇㄹㄴㅇㄹㅇㄴㄹㄴㅇ
+            </div><br>
+          </div>
           <table>
-          <tr>
-            <td style="vertical-align: text-top;">
-              <h5>판매자 정보</h5>
-            </td>
-            <td>
-              <ul>
-                <li>아이디 : <%=article.seller_id %></li>
-                <li>연락처 : <%=article.tel1 %> - <%=article.tel2 %> - <%=article.tel3 %></li>
-              </ul>
-            </td>
-          </tr>
-        </table>
-      </div>
+            <tr>
+              <td style="vertical-align: text-top;">
+                <h5>판매자 정보</h5>
+              </td>
+              <td>
+                <ul>
+                  <li>아이디 : <%=article.seller_id %></li>
+                  <li>연락처 : <%=article.tel1 %> - <%=article.tel2 %> - <%=article.tel3 %></li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+        </div>
       </div>
 
     </div>
