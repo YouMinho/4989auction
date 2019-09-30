@@ -67,62 +67,28 @@
             </form>
         </div>
     
-    
     <div class="works_item alignleft clear" style="margin-top: 150px">
         <div class="carouseller1 row-fluid for-car">
             <h2>올린 물품</h2>
             <div class="carousel-wrapper" style="margin-top: 50px">
                 <div class="carousel-items">
+                    <!-- dfas -->
+                    <%
+                        for(let i=0; i< itresult.length; i++){
+                            let itarticle = itresult[i];
+                    %>
                     <div class="span3 carousel-block">
                         <div class="card h-100">
                             <a href="#"><img class="card-img-top" src="http://placehold.it/200x100" alt=""></a>
                             <div class="card-body">
                                 <h4 class="card-title">
-                                    <a href="#">1번 이름</a>
+                                    <a href="/item_info/<%= itarticle.id %>"><%=itarticle.title%></a>
                                 </h4>
                             </div>
                         </div>
                     </div>
-                    <div class="span3 carousel-block">
-                        <div class="card h-100">
-                            <a href="#"><img class="card-img-top" src="http://placehold.it/200x100" alt=""></a>
-                            <div class="card-body">
-                                <h4 class="card-title">
-                                    <a href="#">이름 클릭</a>
-                                </h4>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="span3 carousel-block">
-                        <div class="card h-100">
-                            <a href="#"><img class="card-img-top" src="http://placehold.it/200x100" alt=""></a>
-                            <div class="card-body">
-                                <h4 class="card-title">
-                                    <a href="#">히면</a>
-                                </h4>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="span3 carousel-block">
-                        <div class="card h-100">
-                            <a href="#"><img class="card-img-top" src="http://placehold.it/200x100" alt=""></a>
-                            <div class="card-body">
-                                <h4 class="card-title">
-                                    <a href="#">이동됨</a>
-                                </h4>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="span3 carousel-block">
-                        <h2>5 item</h2>
-                    </div>
-                    <div class="span3 carousel-block">
-                        <h2>6 item</h2>
-                    </div>
-                    <div class="span3 carousel-block">
-                        <h2>7 item</h2>
-                    </div>
-                </div>
+                    <%}%>
+                    <!-- duasd -->
             </div>
             <div class="carousel-control-block">
                 <div class="carousel-button-left shadow"><a href="javascript:void(0)">‹</a></div>
