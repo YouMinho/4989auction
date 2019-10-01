@@ -8,7 +8,7 @@ const app = express();
 var upload = multer({ dest: 'uploads/' });
 
 app.locals.pretty = true;
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ limit:'100mb', extended: true }));
 app.use(express.static('public'));
 
 app.use(session({
