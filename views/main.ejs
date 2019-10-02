@@ -43,7 +43,15 @@
             </div>
 
             <hr>
-
+            <div class="text-right">
+                    <ul class="pagination text-center">
+                        <% 
+                            for (var i = 0; i < cont; i++) {
+                        %>
+                        <li class="page-item"><a class="page-link" href="/list/<%=category%>/pag/<%=i +1 %>"><%=i +1 %></a></li>
+                        <%}%>
+                    </ul>
+            </div>
             <!-- Call to Action Section -->
             <div class="row mb-4">
                 <div class="col-md-10">

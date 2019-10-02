@@ -8,7 +8,7 @@ const app = express();
 var upload = multer({ dest: 'uploads/' });
 
 app.locals.pretty = true;
-app.use(bodyParser.urlencoded({ limit:'100mb', extended: true }));
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 app.use(express.static('public'));
 
 app.use(session({
@@ -42,8 +42,10 @@ connection.connect((err) => {
 });
 //-----------DB------------------
 
-app.get('/', (req, res) => {
-    let category = req.params.category;
+
+
+app.get(['/', '/list/main/pag/:page'], (req, res) => {
+    let page = req.params.page;
     let hot_item = `
         select id, hit, format(max_price, 0) price, end_time
         from item
@@ -53,24 +55,57 @@ app.get('/', (req, res) => {
         select id, category, hit, format(max_price, 0) price, end_time
         from item
         order by id desc
+        LIMIT ?, ?
     `;
-
-    connection.query(hot_item, (err, h_results, fields) => {
-        if (err) {
-            console.log(err);
-            res.status(500).send('Internal Server Error!!!')
-        }
-        connection.query(category_item, (err, c_results, fields) => {
+    let item_count = `
+        select count(*) as num
+        from item
+    `;
+    if (page == undefined || page == 1) {
+        connection.query(hot_item, (err, h_results, fields) => {
             if (err) {
                 console.log(err);
                 res.status(500).send('Internal Server Error!!!')
             }
-            res.render('main', { h_article: h_results, c_article: c_results, category: 'ALL' });
-        })
-    })
+            connection.query(category_item, [0, 9], (err, c_results, fields) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send('Internal Server Error!!!')
+                }
+                connection.query(item_count, (err, countse, fields) => {
+                    if (err) {
+                        console.log(err);
+                        res.status(500).send('Internal Server Error!!!')
+                    }
+                    res.render('main', { h_article: h_results, c_article: c_results, category: 'main', cont: parseInt(countse[0].num) / 10 });
+                });
+            });
+        });
+    } else {
+        connection.query(hot_item, (err, h_results, fields) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send('Internal Server Error!!!')
+            }
+            connection.query(category_item, [(page * 9) - 9, 9], (err, c_results, fields) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send('Internal Server Error!!!')
+                }
+                connection.query(item_count, (err, countse, fields) => {
+                    if (err) {
+                        console.log(err);
+                        res.status(500).send('Internal Server Error!!!')
+                    }
+                    res.render('main', { h_article: h_results, c_article: c_results, category: 'main', cont: parseInt(countse[0].num) / 10 });
+                });
+            });
+        });
+    }
 })
 
-app.get('/main/:category', (req, res) => {
+app.get(['/list/:category', '/list/:category/pag/:page'], (req, res) => {
+    let page = req.params.page;
     let category = req.params.category;
     sess = req.session;
     let hot_item = `
@@ -82,28 +117,62 @@ app.get('/main/:category', (req, res) => {
         select id, category, hit, format(max_price, 0) price, timediff(end_time, now()) time
         from item
         where category = ?
-        order by id desc
+        LIMIT ?, ?
     `;
-
-    connection.query(hot_item, (err, h_results, fields) => {
-        if (err) {
-            console.log(err);
-            res.status(500).send('Internal Server Error!!!')
-        }
-        connection.query(category_item, [category], (err, c_results, fields) => {
+    let item_count = `
+        select count(*) as num
+        from item
+        where category = ?
+    `;
+    if (page == undefined || page == 1) {
+        connection.query(hot_item, (err, h_results, fields) => {
             if (err) {
                 console.log(err);
                 res.status(500).send('Internal Server Error!!!')
             }
-            res.render('main', { h_article: h_results, c_article: c_results, category: category });
-        })
-    })
+            connection.query(category_item, [category, 0, 9], (err, c_results, fields) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send('Internal Server Error!!!')
+                }
+                connection.query(item_count,[category], (err, countse, fields) => {
+                    if (err) {
+                        console.log(err);
+                        res.status(500).send('Internal Server Error!!!')
+                    }
+                    res.render('main', { h_article: h_results, c_article: c_results, category: category, cont: parseInt(countse[0].num) / 10 });
+                });
+            });
+        });
+    } else {
+        connection.query(hot_item, (err, h_results, fields) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send('Internal Server Error!!!')
+            }
+            connection.query(category_item, [category, (page * 9) - 9, 9], (err, c_results, fields) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send('Internal Server Error!!!')
+                }
+                connection.query(item_count, (err, countse, fields) => {
+                    if (err) {
+                        console.log(err);
+                        res.status(500).send('Internal Server Error!!!')
+                    }
+                    res.render('main', { h_article: h_results, c_article: c_results, category: category, cont: parseInt(countse[0].num) / 10 });
+
+                });
+            });
+        });
+    }
 })
 
 app.get('/login', (req, res) => {
     const sess = req.session;
     res.render('login', { pass: true });
 })
+
 
 app.post('/login', (req, res) => {
     const sess = req.session;
@@ -149,10 +218,10 @@ app.get('/item_add_content', (req, res) => {
 
 app.post('/item_add_content', (req, res) => {
     let seller_id = req.session.userid;
-	let values = [seller_id, req.body.category, req.body.title, req.body.content, req.body.min_price, req.body.max_price];
-	let item_insert = `
-		insert into item (seller_id, category, title, content, min_price, max_price, start_time, end_time)
-		values (?, ?, ?, ?, ?, ?, now(), DATE_ADD(NOW(), INTERVAL 7 DAY))
+    let values = [seller_id, req.body.category, req.body.title, req.body.content, req.body.min_price, req.body.max_price];
+    let item_insert = `
+        insert into item (seller_id, category, title, content, min_price, max_price, start_time, end_time)
+        values (?, ?, ?, ?, ?, ?, now(), DATE_ADD(NOW(), INTERVAL 7 DAY))
     `;
     console.log(values);
 
@@ -180,8 +249,8 @@ app.get('/item_info/:num', (req, res) => {
             res.status(500).send('Internal Server Error!!!');
         }
         console.log(results[0]);
-        
-        res.render('item_info', { article: results[0]});
+
+        res.render('item_info', { article: results[0] });
     });
 });
 
