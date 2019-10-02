@@ -5,6 +5,8 @@ const multer = require('multer')
 const session = require('express-session');
 
 const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 var upload = multer({ dest: 'uploads/' });
 
 app.locals.pretty = true;
@@ -35,7 +37,7 @@ const pool = mysql.createPool({
     connectionLimit: 20,
     waitForConnection: false
 });
-app.listen(8888, () => {
+http.listen(8888, () => {
     console.log('8888 port opened!!!');
 })
 //-----------DB------------------
@@ -210,11 +212,11 @@ app.post('/login', (req, res) => {
                 sess.name = results[0].name;
                 sess.grade = results[0].grade;
                 req.session.save(() => {
-                	connection.release();
+                    connection.release();
                     res.redirect('/');
                 });
             } else {
-            	connection.release();
+                connection.release();
                 res.render('login', { pass: false });
             }
         })
@@ -259,9 +261,38 @@ app.post('/item_add_content', (req, res) => {
 });
 
 app.get('/item_info/:num', (req, res) => {
-    let num = req.params.num
+    const num = req.params.num
+    const nsp = io.of('/' + num)
+    nsp.on('connection', (socket) => {
+        console.log('a user connected');
+        socket.on('chat message', (msg) => {
+            let ipchal_update = `
+            update item
+            set price = ?
+            where id = ?
+            and price < ?
+        `;
+            pool.getConnection((err, connection) => {
+                connection.query(ipchal_update, [msg, num, msg], (err, result) => {
+                    if (err) {
+                        console.log(err);
+                        connection.release();
+                    }
+
+                    if (result.changedRows == 1) {
+                        connection.release();
+                        nsp.emit('chat message', msg);
+                    }
+                });
+            });
+        });
+        socket.on('disconnect', () => {
+            console.log('user disconnected');
+        });
+    });
+
     let item_select = `
-        select i.id, format(i.max_price, 0) price, timediff(i.end_time, now()) time, i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3
+        select i.id, format(price, 0) price, time_to_sec(timediff(i.end_time, now())) time, i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3
         from item i, users u
         where i.id = ?
         and u.id = i.seller_id
@@ -345,11 +376,11 @@ app.post('/find_idpw', (req, res) => {
                 sess.name = results[0].name;
                 sess.grade = results[0].grade;
                 req.session.save(() => {
-                	connection.release();
+                    connection.release();
                     res.redirect('/mypage');
                 });
             } else {
-            	connection.release();
+                connection.release();
                 res.render('find_inpw', { msg: "등록된 계정이 없습니다." });
             }
         })
