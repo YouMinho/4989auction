@@ -271,9 +271,10 @@ app.get('/item_info/:num', (req, res) => {
             set price = ?
             where id = ?
             and price < ?
+            and max_price >= ?
         `;
             pool.getConnection((err, connection) => {
-                connection.query(ipchal_update, [msg, num, msg], (err, result) => {
+                connection.query(ipchal_update, [msg, num, msg, msg], (err, result) => {
                     if (err) {
                         console.log(err);
                         connection.release();
@@ -292,7 +293,7 @@ app.get('/item_info/:num', (req, res) => {
     });
 
     let item_select = `
-        select i.id, format(price, 0) price, time_to_sec(timediff(i.end_time, now())) time, i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3
+        select i.id, format(i.price, 0) price, format(i.max_price, 0) max_price, time_to_sec(timediff(i.end_time, now())) time, i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3
         from item i, users u
         where i.id = ?
         and u.id = i.seller_id
@@ -304,7 +305,6 @@ app.get('/item_info/:num', (req, res) => {
                 connection.release();
                 res.status(500).send('Internal Server Error!!!');
             }
-            console.log(results[0]);
             connection.release();
             res.render('item_info', { article: results[0] });
         });

@@ -97,7 +97,7 @@
                 <span style="font-size: 30px;">현재가격 : </span>
                 <span id="price" style="font-size: 35px;"><%=article.price %></span></div>
             </div>
-            <div style="color : gray; font-size: 80%; padding: 5px 0 0 20px;">※ 주의사항 : ㄹㄴㅇㄹㄴㅇㄹㅇㄴㄹㄴㅇ</div><br>
+            <div style="color : gray; font-size: 80%; padding: 5px 0 0 20px;">※ 상한가 : <%= article.max_price%>원 이하 가격만 입찰 가능합니다.</div><br>
           </div>
           <div class="card-body" style="padding: 15px 15px 0 5px;">
             <form action="">
@@ -107,8 +107,7 @@
                 <button id="ipchal" style="margin-left: 15px;" class="btn btn-secondary" type="submit">입찰하기!</button>
               </span>
             </div>
-            <div style="color : gray; font-size: 80%; padding-bottom: 20px; padding: 5px 0 0 20px;">※ 주의사항 :
-              ㄹㄴㅇㄹㄴㅇㄹㅇㄴㄹㄴㅇ
+            <div style="color : gray; font-size: 80%; padding-bottom: 20px; padding: 5px 0 0 20px;">※ 주의사항 : 숫자만 입력하세요.
             </div><br>
           </div>
         </form>
