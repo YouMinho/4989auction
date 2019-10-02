@@ -135,7 +135,7 @@ app.get(['/list/:category', '/list/:category/pag/:page'], (req, res) => {
                     console.log(err);
                     res.status(500).send('Internal Server Error!!!')
                 }
-                connection.query(item_count,[category], (err, countse, fields) => {
+                connection.query(item_count, category, (err, countse, fields) => {
                     if (err) {
                         console.log(err);
                         res.status(500).send('Internal Server Error!!!')
@@ -155,7 +155,7 @@ app.get(['/list/:category', '/list/:category/pag/:page'], (req, res) => {
                     console.log(err);
                     res.status(500).send('Internal Server Error!!!')
                 }
-                connection.query(item_count, (err, countse, fields) => {
+                connection.query(item_count, category, (err, countse, fields) => {
                     if (err) {
                         console.log(err);
                         res.status(500).send('Internal Server Error!!!')
