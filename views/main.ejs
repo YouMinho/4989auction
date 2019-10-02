@@ -8,10 +8,10 @@
     <div>
         <!-- Page Content -->
         <div class="container">
-
-            <h1 class="my-4">여기서 부터 시작 합니다 4989 여기에 뭘 넣을까</h1>
+            <% if(user.userid) { %>
+            <h1 class="my-4"><%=user.name%>님 환영합니다.</h1>
+            <% }%>
             <h3 class="my-4"><%=category%></h3>
-            <h3 class="my-4"><%=user.name%></h3>
             <!-- Search Section -->
 
             <form method="POST" action="">
@@ -51,7 +51,6 @@
                     <% 
                         for (var i = 0; i < cont; i++) {
                     %>
-                    <!-- <li class="page-item"><a class="page-link" href="/list/<%=category%>/pag/<%=i +1 %>"><%=i +1 %></a></li> -->
                     <li class="page-item"><a class="page-link" href="/?category=<%=data.category%>&keyword=<%=data.keyword%>&page=<%=i +1 %>"><%=i +1 %></a></li>
                     <%
                         }

@@ -5,6 +5,8 @@ const multer = require('multer')
 const session = require('express-session');
 
 const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 var upload = multer({ dest: 'uploads/' });
 
 app.locals.pretty = true;
@@ -238,9 +240,36 @@ app.post('/item_add_content', (req, res) => {
 });
 
 app.get('/item_info/:num', (req, res) => {
-    let num = req.params.num
+        
+    const num = req.params.num
+    const nsp = io.of('/'+num)
+    nsp.on('connection', (socket) => {
+        console.log('a user connected');
+        socket.on('chat message', (msg) => {
+            let ipchal_update = `
+            update item
+            set price = ?
+            where id = ?
+            and price < ?
+        `;
+        
+        connection.query(ipchal_update, [msg, num, msg], (err, result) => {
+            if (err) {
+                console.log(err);
+            }        
+            
+            if(result.changedRows == 1) {
+                nsp.emit('chat message', msg);
+            }
+        })
+        });
+        socket.on('disconnect', () => {
+        console.log('user disconnected');
+        });
+    });
+    
     let item_select = `
-        select i.id, format(i.max_price, 0) price, timediff(i.end_time, now()) time, i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3
+        select i.id, format(price, 0) price, time_to_sec(timediff(i.end_time, now())) time, i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3
         from item i, users u
         where i.id = ?
         and u.id = i.seller_id
@@ -251,8 +280,41 @@ app.get('/item_info/:num', (req, res) => {
             res.status(500).send('Internal Server Error!!!');
         }
         console.log(results[0]);
+        
+        res.render('item_info', { article: results[0]});
+    });
+});
 
-        res.render('item_info', { article: results[0] });
+
+app.get('/signup', (req, res) => {
+    res.render('signup');
+});
+
+app.post('/signup', (req, res) => {
+    const sess = req.session;
+
+    let id = req.body.id;
+    let name = req.body.name;
+    let password = req.body.pass;
+    let emailid = req.body.emailid;
+    let emaildomain = req.body.emaildomain;
+    let tel1 = req.body.tel1;
+    let tel2 = req.body.tel2;
+    let tel3 = req.body.tel3;
+    let address = req.body.address;
+
+    let values = [id, password, "G", name, emailid, emaildomain, tel1, tel2, tel3, address];
+    let users_insert = `
+    insert into users (id, password, grade, name, emailid, emaildomain, tel1, tel2, tel3, address)
+    values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    connection.query(users_insert, values, (err, result) => {
+        sess.userid = id;
+        sess.name = name;
+        sess.grade = "G";
+        req.session.save(() => {
+            res.redirect('/');
+        });
     });
 });
 
@@ -389,6 +451,6 @@ app.post('/mypage', (req, res) => {
     });
 });
 
-app.listen(8888, () => {
+http.listen(8888, () => {
     console.log('8888 port opened!!!');
 })

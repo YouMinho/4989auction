@@ -5,6 +5,8 @@ const multer = require('multer')
 const session = require('express-session');
 
 const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 var upload = multer({ dest: 'uploads/' });
 var list_query_data = {
     category: "%",
@@ -41,7 +43,7 @@ const pool = mysql.createPool({
     connectionLimit: 20,
     waitForConnection: false
 });
-app.listen(8888, () => {
+http.listen(8888, () => {
     console.log('8888 port opened!!!');
 })
 //-----------DB------------------
@@ -150,11 +152,11 @@ app.post('/login', (req, res) => {
                 sess.name = results[0].name;
                 sess.grade = results[0].grade;
                 req.session.save(() => {
-                	connection.release();
+                    connection.release();
                     res.redirect('/');
                 });
             } else {
-            	connection.release();
+                connection.release();
                 res.render('login', { pass: false });
             }
         })
@@ -178,10 +180,10 @@ app.get('/item_add_content', (req, res) => {
 
 app.post('/item_add_content', (req, res) => {
     let seller_id = req.session.userid;
-    let values = [seller_id, req.body.category, req.body.title, req.body.content, req.body.min_price, req.body.max_price];
+    let values = [seller_id, req.body.category, req.body.title, req.body.content, req.body.min_price, req.body.max_price, req.body.min_price];
     let item_insert = `
-        insert into item (seller_id, category, title, content, min_price, max_price, start_time, end_time)
-        values (?, ?, ?, ?, ?, ?, now(), DATE_ADD(NOW(), INTERVAL 7 DAY))
+        insert into item (seller_id, category, title, content, min_price, max_price, start_time, end_time, price)
+        values (?, ?, ?, ?, ?, ?, now(), DATE_ADD(NOW(), INTERVAL 7 DAY), ?)
     `;
     console.log(values);
     pool.getConnection((err, connection) => {
@@ -199,9 +201,39 @@ app.post('/item_add_content', (req, res) => {
 });
 
 app.get('/item_info/:num', (req, res) => {
-    let num = req.params.num
+    const num = req.params.num
+    const nsp = io.of('/' + num)
+    nsp.on('connection', (socket) => {
+        console.log('a user connected');
+        socket.on('chat message', (msg) => {
+            let ipchal_update = `
+            update item
+            set price = ?
+            where id = ?
+            and price < ?
+            and max_price >= ?
+        `;
+            pool.getConnection((err, connection) => {
+                connection.query(ipchal_update, [msg, num, msg, msg], (err, result) => {
+                    if (err) {
+                        console.log(err);
+                        connection.release();
+                    }
+
+                    if (result.changedRows == 1) {
+                        connection.release();
+                        nsp.emit('chat message', msg);
+                    }
+                });
+            });
+        });
+        socket.on('disconnect', () => {
+            console.log('user disconnected');
+        });
+    });
+
     let item_select = `
-        select i.id, format(i.max_price, 0) price, timediff(i.end_time, now()) time, i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3
+        select i.id, format(i.price, 0) price, format(i.max_price, 0) max_price, time_to_sec(timediff(i.end_time, now())) time, i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3
         from item i, users u
         where i.id = ?
         and u.id = i.seller_id
@@ -213,7 +245,6 @@ app.get('/item_info/:num', (req, res) => {
                 connection.release();
                 res.status(500).send('Internal Server Error!!!');
             }
-            console.log(results[0]);
             connection.release();
             res.render('item_info', { article: results[0] });
         });
@@ -285,11 +316,11 @@ app.post('/find_idpw', (req, res) => {
                 sess.name = results[0].name;
                 sess.grade = results[0].grade;
                 req.session.save(() => {
-                	connection.release();
+                    connection.release();
                     res.redirect('/mypage');
                 });
             } else {
-            	connection.release();
+                connection.release();
                 res.render('find_inpw', { msg: "등록된 계정이 없습니다." });
             }
         })

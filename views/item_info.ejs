@@ -5,26 +5,73 @@
 
 <body>
     <script>
+        let time = '<%= article.time %>';
+        let d = parseInt(time / (60*60*24));
+        console.log(d);
+        time -= d * (60*60*24);
+        let h = parseInt(time / (60 * 60));
+        console.log(h);
+        time -= h * (60*60);
+        let m = parseInt(time / 60);
+        console.log(m);
+        time -= m * (60);
+        let s = time;
+        console.log(s);
+        
+        
         function time_load() {
-            $("#time").load('/item_info/<%=article.id%> #time')
+            s--;
+            if(s == -1) {
+                m--;
+                s = 59;
+            }
+            if(m == -1) {
+                h--;
+                m = 59;
+                s = 59;
+            }
+            if (h == -1) {
+                d--;
+                h = 59;
+                m = 59;
+                s = 59;
+            }
+            if (d == -1) {
+                d = 0;
+            }
+            $("#time").text(d + '일 '+ h + '시간 ' + m + '분 ' + s + '초');
         }
         $(document).ready(() => {
-
+            $("#time").text(d + '일 '+ h + '시간 ' + m + '분 ' + s + '초');
             setInterval("time_load()", 1000)
         })
+    </script>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+      $(() => {
+        let url = window.location.href;
+        const param = url.substring(url.lastIndexOf('/'));
+        socket = io(param);
+        
+        $('form').submit(() => {
+          socket.emit('chat message', $('#money').val());
+          $('#money').val('');
+          return false;
+        });
+        socket.on('chat message', (msg) => {
+          
+          $('#price').text(msg)
+        });
+      });
     </script>
   <%- include('./includes/logo.ejs') %>
   <!-- Page Content -->
   <div class="container">
 
     <!-- Page Heading/Breadcrumbs -->
-    <div class="row mt-3">
-        <h1 class="col-9"><%=article.title%></h1>
-        <div class="col-3 mt-3" style="text-align: right">
-          <a href="/mypage"><button class="btn btn-dark btn-sm" type="button" id="modify">수정</button></a>
-          <a href="/logout"><button class="btn btn-dark btn-sm" type="button" id="delete">삭제</button></a>
-        </div>
-      </div>
+    <h1 class="mt-4 mb-3"><%=article.title%></h1>
 
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
@@ -41,30 +88,29 @@
       <div class="col-lg-6">
         <div style="margin-bottom: 15px; color: red;">
           <span style="font-size: 30px;">남은시간 : </span>
-          <span id="time" style="font-size: 32px;"><%= article.time %></span>
+          <span id="time" style="font-size: 32px;"></span>
         </div>
         <div>
           <div class="card-body" style="padding: 0 15px 0 5px;">
             <div class="input-group" style="width: 450px;">
               <div style="display: inline-block; width: 350px;">
                 <span style="font-size: 30px;">현재가격 : </span>
-                <span style="font-size: 35px;"><%=article.price %></span></div>
-              <button style="margin-left: 5px; margin-top: 10px; height: 38px;" class="btn btn-secondary"
-                type="button">입찰하기!</button>
+                <span id="price" style="font-size: 35px;"><%=article.price %></span></div>
             </div>
-            <div style="color : gray; font-size: 80%; padding: 5px 0 0 20px;">※ 주의사항 : ㄹㄴㅇㄹㄴㅇㄹㅇㄴㄹㄴㅇ</div><br>
+            <div style="color : gray; font-size: 80%; padding: 5px 0 0 20px;">※ 상한가 : <%= article.max_price%>원 이하 가격만 입찰 가능합니다.</div><br>
           </div>
           <div class="card-body" style="padding: 15px 15px 0 5px;">
+            <form action="">
             <div class="input-group" style="width: 450px;">
-              <input type="text" style="width: 300px;" class="form-control" placeholder="금액을 입력하세요.">
+              <input id="money" type="text" style="width: 300px;" name="input_price" class="form-control" placeholder="금액을 입력하세요." onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' maxlength=8>
               <span class="input-group-btn">
-                <button style="margin-left: 15px;" class="btn btn-secondary" type="button">입찰하기!</button>
+                <button id="ipchal" style="margin-left: 15px;" class="btn btn-secondary" type="submit">입찰하기!</button>
               </span>
             </div>
-            <div style="color : gray; font-size: 80%; padding-bottom: 20px; padding: 5px 0 0 20px;">※ 주의사항 :
-              ㄹㄴㅇㄹㄴㅇㄹㅇㄴㄹㄴㅇ
+            <div style="color : gray; font-size: 80%; padding-bottom: 20px; padding: 5px 0 0 20px;">※ 주의사항 : 숫자만 입력하세요.
             </div><br>
           </div>
+        </form>
           <table>
             <tr>
               <td style="vertical-align: text-top;">
@@ -85,7 +131,7 @@
     <!-- /.row -->
     <div style="padding: 15px; border-top: 1.5px solid gray;">
       <h3>상세설명</h3>
-      <div style="overflow-y:scroll; height: 250px;"><%-article.content%></div>
+      <div style="overflow-y:scroll; height: 250px;"><%=article.content%></div>
     </div>
 
     <!-- Our Customers -->
@@ -120,6 +166,7 @@
   <!-- Bootstrap core JavaScript -->
   <script src="/vendor/jquery/jquery.min.js"></script>
   <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/signup.js"></script>
 
 </body>
 
