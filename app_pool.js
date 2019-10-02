@@ -6,6 +6,11 @@ const session = require('express-session');
 
 const app = express();
 var upload = multer({ dest: 'uploads/' });
+var list_query_data = {
+    category: "%",
+    keyword: "%",
+    page: 1
+};
 
 app.locals.pretty = true;
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
@@ -19,6 +24,7 @@ app.use(session({
 
 app.use(function(req, res, next) {
     res.locals.user = req.session;
+    res.locals.data = list_query_data;
     next();
 });
 
@@ -40,8 +46,29 @@ app.listen(8888, () => {
 })
 //-----------DB------------------
 
-app.get(['/', '/list/main/pag/:page'], (req, res) => {
-    let page = req.params.page;
+app.get('/', (req, res) => {
+    let category, key, page;
+
+    if(req.query.category != undefined) { // 쿼리에 카테고리가 있으면
+        category = req.query.category;
+        list_query_data.category = category;
+    }
+    else {
+        list_query_data.category = "%";
+        category = list_query_data.category;
+    }
+
+    if(req.query.keyword != undefined && req.query.keyword != "%") { // 쿼리에 키워드가 있으면
+        key = "%" + req.query.keyword + "%";
+    }
+    else {
+        list_query_data.keyword = "%";
+        key = list_query_data.keyword;
+    }
+
+    if(req.query.page != undefined) page = req.query.page;
+    else page = 1;
+
     let hot_item = `
         select id, hit, format(max_price, 0) price, end_time
         from item
@@ -50,28 +77,30 @@ app.get(['/', '/list/main/pag/:page'], (req, res) => {
     let category_item = `
         select id, category, hit, format(max_price, 0) price, end_time
         from item
+        where title like ? and category like ?
         order by id desc
         LIMIT ?, ?
     `;
     let item_count = `
         select count(*) as num
         from item
+        where title like ? and category like ?
     `;
+
     pool.getConnection((err, connection) => {
-        if (page == undefined || page == 1) {
             connection.query(hot_item, (err, h_results, fields) => {
                 if (err) {
                     console.log(err);
                     connection.release();
                     res.status(500).send('Internal Server Error!!!')
                 }
-                connection.query(category_item, [0, 9], (err, c_results, fields) => {
+                connection.query(category_item, [key, category, (page * 9) - 9, 9], (err, c_results, fields) => {
                     if (err) {
                         console.log(err);
                         connection.release();
                         res.status(500).send('Internal Server Error!!!')
                     }
-                    connection.query(item_count, (err, countse, fields) => {
+                    connection.query(item_count, [key, category], (err, countse, fields) => {
                         if (err) {
                             console.log(err);
                             connection.release();
@@ -82,106 +111,17 @@ app.get(['/', '/list/main/pag/:page'], (req, res) => {
                     });
                 });
             });
-        } else {
-            connection.query(hot_item, (err, h_results, fields) => {
-                if (err) {
-                    console.log(err);
-                    connection.release();
-                    res.status(500).send('Internal Server Error!!!')
-                }
-                connection.query(category_item, [(page * 9) - 9, 9], (err, c_results, fields) => {
-                    if (err) {
-                        console.log(err);
-                        connection.release();
-                        res.status(500).send('Internal Server Error!!!')
-                    }
-                    connection.query(item_count, (err, countse, fields) => {
-                        if (err) {
-                            console.log(err);
-                            connection.release();
-                            res.status(500).send('Internal Server Error!!!')
-                        }
-                        connection.release();
-                        res.render('main', { h_article: h_results, c_article: c_results, category: 'main', cont: parseInt(countse[0].num) / 10 });
-                    });
-                });
-            });
-        }
     });
 })
 
-app.get(['/list/:category', '/list/:category/pag/:page'], (req, res) => {
-    let page = req.params.page;
-    let category = req.params.category;
-    sess = req.session;
-    let hot_item = `
-        select id, hit, format(max_price, 0) price, timediff(end_time, now()) time
-        from item
-        order by hit desc
-    `;
-    let category_item = `
-        select id, category, hit, format(max_price, 0) price, timediff(end_time, now()) time
-        from item
-        where category = ?
-        LIMIT ?, ?
-    `;
-    let item_count = `
-        select count(*) as num
-        from item
-        where category = ?
-    `;
-    pool.getConnection((err, connection) => {
-        if (page == undefined || page == 1) {
-            connection.query(hot_item, (err, h_results, fields) => {
-                if (err) {
-                    console.log(err);
-                    connection.release();
-                    res.status(500).send('Internal Server Error!!!')
-                }
-                connection.query(category_item, [category, 0, 9], (err, c_results, fields) => {
-                    if (err) {
-                        console.log(err);
-                        connection.release();
-                        res.status(500).send('Internal Server Error!!!')
-                    }
-                    connection.query(item_count, category, (err, countse, fields) => {
-                        if (err) {
-                            console.log(err);
-                            connection.release();
-                            res.status(500).send('Internal Server Error!!!')
-                        }
-                        connection.release();
-                        res.render('main', { h_article: h_results, c_article: c_results, category: category, cont: parseInt(countse[0].num) / 10 });
-                    });
-                });
-            });
-        } else {
-            connection.query(hot_item, (err, h_results, fields) => {
-                if (err) {
-                    console.log(err);
-                    connection.release();
-                    res.status(500).send('Internal Server Error!!!')
-                }
-                connection.query(category_item, [category, (page * 9) - 9, 9], (err, c_results, fields) => {
-                    if (err) {
-                        console.log(err);
-                        connection.release();
-                        res.status(500).send('Internal Server Error!!!')
-                    }
-                    connection.query(item_count, category, (err, countse, fields) => {
-                        if (err) {
-                            console.log(err);
-                            connection.release();
-                            res.status(500).send('Internal Server Error!!!')
-                        }
-                        connection.release();
-                        res.render('main', { h_article: h_results, c_article: c_results, category: category, cont: parseInt(countse[0].num) / 10 });
-                    });
-                });
-            });
-        }
-    });
-})
+app.post('/', (req, res) => { // 검색버튼 클릭
+    let keyword = req.body.keyword;
+    let category = list_query_data.category;
+    
+    if(keyword=='') keyword = "%";
+    list_query_data.keyword = keyword;
+    res.redirect('/' + '?category=' + category + '&keyword=' + keyword + '&page=1');
+});
 
 app.get('/login', (req, res) => {
     const sess = req.session;

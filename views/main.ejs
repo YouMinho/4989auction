@@ -14,19 +14,22 @@
             <h3 class="my-4"><%=user.name%></h3>
             <!-- Search Section -->
 
-            <div class="row">
-                <div class="input-group col-4">
-                    <input type="text" style="width: 300px;" class="form-control">
+            <form method="POST" action="">
+                <div class="row">
+                    <div class="input-group col-4">
+                        <input type="text" style="width: 300px;" class="form-control" id="keyword" name="keyword">
+                    </div>
+                    <div class="input-group-btn col-2">
+                        <button class="btn btn-secondary" type="submit">검색</button>
+                    </div>
+
+                    <div class="col-6 text-right">
+                        <% if(user.userid) { %>
+                        <a href="/item_add"><button class="btn btn-secondary" type="button">물품 올리기</button></a>
+                        <% }%>
+                    </div>
                 </div>
-                <div class="input-group-btn col-2">
-                    <button class="btn btn-secondary" type="button">검색</button>
-                </div>
-                <div class="col-6 text-right">
-                    <% if(user.userid) { %>
-                    <a href="/item_add"><button class="btn btn-secondary" type="button">물품 올리기</button></a> 
-                    <% }%>
-                </div>
-            </div>
+            </form>
 
             <!-- Portfolio Section -->
             <h2>인기품목</h2>
@@ -44,12 +47,15 @@
 
             <hr>
             <div class="text-right">
-                    <ul class="pagination text-center">
-                        <% 
-                            for (var i = 0; i < cont; i++) {
-                        %>
-                        <li class="page-item"><a class="page-link" href="/list/<%=category%>/pag/<%=i +1 %>"><%=i +1 %></a></li>
-                        <%}%>
+                <ul class="pagination text-center">
+                    <% 
+                        for (var i = 0; i < cont; i++) {
+                    %>
+                    <!-- <li class="page-item"><a class="page-link" href="/list/<%=category%>/pag/<%=i +1 %>"><%=i +1 %></a></li> -->
+                    <li class="page-item"><a class="page-link" href="/?category=<%=data.category%>&keyword=<%=data.keyword%>&page=<%=i +1 %>"><%=i +1 %></a></li>
+                    <%
+                        }
+                    %>
                     </ul>
             </div>
             <!-- Call to Action Section -->
@@ -70,10 +76,10 @@
         <!-- /.container -->
         <%- include('./includes/footer.ejs') %>
 
-        <!-- Bootstrap core JavaScript -->
-        <script src="/vendor/jquery/jquery.min.js"></script>
-        <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    </div>
+                    <!-- Bootstrap core JavaScript -->
+                    <script src="/vendor/jquery/jquery.min.js"></script>
+                    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+            </div>
 </body>
 
 </html>

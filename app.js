@@ -46,6 +46,7 @@ connection.connect((err) => {
 
 app.get(['/', '/list/main/pag/:page'], (req, res) => {
     let page = req.params.page;
+    let key = "%" + req.query.keyword + "%";
     let hot_item = `
         select id, hit, format(max_price, 0) price, end_time
         from item
@@ -54,6 +55,7 @@ app.get(['/', '/list/main/pag/:page'], (req, res) => {
     let category_item = `
         select id, category, hit, format(max_price, 0) price, end_time
         from item
+        where title like ?
         order by id desc
         LIMIT ?, ?
     `;
@@ -67,7 +69,7 @@ app.get(['/', '/list/main/pag/:page'], (req, res) => {
                 console.log(err);
                 res.status(500).send('Internal Server Error!!!')
             }
-            connection.query(category_item, [0, 9], (err, c_results, fields) => {
+            connection.query(category_item, [key, 0, 9], (err, c_results, fields) => {
                 if (err) {
                     console.log(err);
                     res.status(500).send('Internal Server Error!!!')
@@ -87,7 +89,7 @@ app.get(['/', '/list/main/pag/:page'], (req, res) => {
                 console.log(err);
                 res.status(500).send('Internal Server Error!!!')
             }
-            connection.query(category_item, [(page * 9) - 9, 9], (err, c_results, fields) => {
+            connection.query(category_item, [key, (page * 9) - 9, 9], (err, c_results, fields) => {
                 if (err) {
                     console.log(err);
                     res.status(500).send('Internal Server Error!!!')
