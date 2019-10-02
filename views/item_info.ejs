@@ -18,7 +18,13 @@
   <div class="container">
 
     <!-- Page Heading/Breadcrumbs -->
-    <h1 class="mt-4 mb-3"><%=article.title%></h1>
+    <div class="row mt-3">
+        <h1 class="col-9"><%=article.title%></h1>
+        <div class="col-3 mt-3" style="text-align: right">
+          <a href="/mypage"><button class="btn btn-dark btn-sm" type="button" id="modify">수정</button></a>
+          <a href="/logout"><button class="btn btn-dark btn-sm" type="button" id="delete">삭제</button></a>
+        </div>
+      </div>
 
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
