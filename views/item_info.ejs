@@ -102,7 +102,7 @@
           <div class="card-body" style="padding: 15px 15px 0 5px;">
             <form action="">
             <div class="input-group" style="width: 450px;">
-              <input id="money" type="text" style="width: 300px;" name="input_price" class="form-control" placeholder="금액을 입력하세요.">
+              <input id="money" type="text" style="width: 300px;" name="input_price" class="form-control" placeholder="금액을 입력하세요." onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' maxlength=8>
               <span class="input-group-btn">
                 <button id="ipchal" style="margin-left: 15px;" class="btn btn-secondary" type="submit">입찰하기!</button>
               </span>
@@ -166,6 +166,7 @@
   <!-- Bootstrap core JavaScript -->
   <script src="/vendor/jquery/jquery.min.js"></script>
   <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/signup.js"></script>
 
 </body>
 

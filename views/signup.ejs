@@ -25,12 +25,16 @@
                 </div>
                 <div class="form-group" align="left">
                     <label for="">비밀번호</label>
-                    <input type="password" class="form-control" id="pass" name="pass" placeholder="">
+                    <input type="password" class="form-control" id="pwd1" name="pass" placeholder="">
                 </div>
                 <div class="form-group" align="left">
                     <label for="">비밀번호재입력</label>
-                    <input type="password" class="form-control" id="passcheck" name="passcheck" placeholder="">
+                    <input type="password" class="form-control" id="pwd2" name="passcheck" placeholder="">
                 </div>
+                <div class="alert alert-success" id="alert-success">비밀번호가 일치합니다.</div>
+                <div class="alert alert-danger" id="alert-danger">비밀번호가 일치하지 않습니다.</div>
+
+
                 <div class="form-group" align="left">
                     <label for="email">이메일</label><br>
                     <div id="email" class="custom-control-inline">
@@ -56,8 +60,8 @@
                             <option value="051">051</option>
                             <option value="061">061</option>
                         </select> _
-                        <input type="text" class="form-control" id="tel2" name="tel2" placeholder=""> _
-                        <input type="text" class="form-control" id="tel3" name="tel3" placeholder="">
+                        <input type="text" class="form-control" id="tel2" name="tel2" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' maxlength=4> _
+                        <input type="text" class="form-control" id="tel3" name="tel3" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' maxlength=4>
                     </div>
                 </div>
                 <div class="form-group" align="left">
@@ -77,6 +81,8 @@
     <!-- Bootstrap core JavaScript -->
     <script src="/vendor/jquery/jquery.min.js"></script>
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/signup.js"></script>
+    
 </body>
 
 </html>
