@@ -242,7 +242,7 @@ app.post('/signup', (req, res) => {
     let address = req.body.addr2;
     let address_detail = req.body.addr3;
 
-    let values = [id, password, "G", name, emailid, emaildomain, tel1, tel2, tel3, address];
+    let values = [id, password, "G", name, emailid, emaildomain, tel1, tel2, tel3, zip_code, address, address_detail];
     let users_insert = `
     insert into users (id, password, grade, name, emailid, emaildomain, tel1, tel2, tel3, zip_code, address, address_detail)
     values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
