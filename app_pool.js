@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
@@ -7,16 +8,45 @@ const session = require('express-session');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-var upload = multer({ dest: 'uploads/' });
 var list_query_data = {
     category: "%",
     keyword: "%",
     page: 1
 };
 
+const uploadformat = require('./public/js/uploadformat');
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        let upload_folder = uploadformat.dateFormat();
+        let real_folder = './uploads/' + upload_folder;
+        fs.access(real_folder, fs.constants.F_OK | fs.constants.R_OK | fs.constants.W_OK, (err) => {
+            if (err) {
+                if (err.code = 'ENOENT') {
+                    fs.mkdir(real_folder, (err) => {
+                        if (err) {
+                            throw err;
+                        }
+                        cb(null, real_folder);
+                    });
+                }
+            } else {
+                cb(null, real_folder);
+            }
+        });
+    },
+    filename: function (req, file, cb) {
+        let oname = file.originalname;
+        let idx = oname.lastIndexOf('.');
+        cb(null, oname.substring(0, idx) + uploadformat.timeFormat() + oname.substring(idx));
+    }
+});
+
+var upload = multer({ storage: storage });
+
 app.locals.pretty = true;
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 app.use(express.static('public'));
+app.use('/item_info', express.static('uploads'));
 
 app.use(session({
     secret: '@#@$MYSIGN#@$#$',
@@ -24,7 +54,7 @@ app.use(session({
     saveUninitialized: true
 }));
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     req.session.userid = 'test';
     req.session.name = 'test';
     res.locals.user = req.session;
@@ -53,7 +83,7 @@ http.listen(8888, () => {
 app.get('/', (req, res) => {
     let category, key, page;
 
-    if(req.query.category != undefined) { // 쿼리에 카테고리가 있으면
+    if (req.query.category != undefined) { // 쿼리에 카테고리가 있으면
         category = req.query.category;
         list_query_data.category = category;
     }
@@ -62,7 +92,7 @@ app.get('/', (req, res) => {
         category = list_query_data.category;
     }
 
-    if(req.query.keyword != undefined && req.query.keyword != "%") { // 쿼리에 키워드가 있으면
+    if (req.query.keyword != undefined && req.query.keyword != "%") { // 쿼리에 키워드가 있으면
         key = "%" + req.query.keyword + "%";
     }
     else {
@@ -70,7 +100,7 @@ app.get('/', (req, res) => {
         key = list_query_data.keyword;
     }
 
-    if(req.query.page != undefined) page = req.query.page;
+    if (req.query.page != undefined) page = req.query.page;
     else page = 1;
 
     let hot_item = `
@@ -92,37 +122,37 @@ app.get('/', (req, res) => {
     `;
 
     pool.getConnection((err, connection) => {
-            connection.query(hot_item, (err, h_results, fields) => {
+        connection.query(hot_item, (err, h_results, fields) => {
+            if (err) {
+                console.log(err);
+                connection.release();
+                res.status(500).send('Internal Server Error!!!')
+            }
+            connection.query(category_item, [key, category, (page * 9) - 9, 9], (err, c_results, fields) => {
                 if (err) {
                     console.log(err);
                     connection.release();
                     res.status(500).send('Internal Server Error!!!')
                 }
-                connection.query(category_item, [key, category, (page * 9) - 9, 9], (err, c_results, fields) => {
+                connection.query(item_count, [key, category], (err, countse, fields) => {
                     if (err) {
                         console.log(err);
                         connection.release();
                         res.status(500).send('Internal Server Error!!!')
                     }
-                    connection.query(item_count, [key, category], (err, countse, fields) => {
-                        if (err) {
-                            console.log(err);
-                            connection.release();
-                            res.status(500).send('Internal Server Error!!!')
-                        }
-                        connection.release();
-                        res.render('main', { h_article: h_results, c_article: c_results, category: 'main', cont: parseInt(countse[0].num) / 10 });
-                    });
+                    connection.release();
+                    res.render('main', { h_article: h_results, c_article: c_results, category: 'main', cont: parseInt(countse[0].num) / 10 });
                 });
             });
+        });
     });
 })
 
 app.post('/', (req, res) => { // 검색버튼 클릭
     let keyword = req.body.keyword;
     let category = list_query_data.category;
-    
-    if(keyword=='') keyword = "%";
+
+    if (keyword == '') keyword = "%";
     list_query_data.keyword = keyword;
     res.redirect('/' + '?category=' + category + '&keyword=' + keyword + '&page=1');
 });
@@ -179,14 +209,20 @@ app.get('/item_add_content', (req, res) => {
     res.render('item_add_content');
 });
 
-app.post('/item_add_content', (req, res) => {
+app.post('/item_add_content', upload.single('img'), (req, res) => {
     let seller_id = req.session.userid;
     let values = [seller_id, req.body.category, req.body.title, req.body.content, req.body.min_price, req.body.max_price, req.body.min_price];
     let item_insert = `
         insert into item (seller_id, category, title, content, min_price, max_price, start_time, end_time, price)
         values (?, ?, ?, ?, ?, ?, now(), DATE_ADD(NOW(), INTERVAL 7 DAY), ?)
     `;
+    let img_insert = `
+        insert into img (savefolder, originalname, savename, item_id)
+        values (?, ?, ?, ?)
+    `;
     console.log(values);
+    console.log(req.file);
+
     pool.getConnection((err, connection) => {
         connection.query(item_insert, values, (err, result) => {
             if (err) {
@@ -194,9 +230,31 @@ app.post('/item_add_content', (req, res) => {
                 connection.release();
                 res.status(500).send('Internal Server Error!!!');
             }
-            console.log('result : ', result);
-            connection.release();
-            res.redirect('/item_info/' + result.insertId);
+            let pageId = result.insertId;
+            let upload_folder = uploadformat.dateFormat();
+            let values2 = [upload_folder, req.file.originalname, req.file.filename, result.insertId];
+
+            connection.query(img_insert, values2, (err, result) => {
+                if (err) {
+                    connection.rollback(() => {
+                        console.log(err);
+                        connection.release();
+                        res.status(500).send('Internal Server Error!!!');
+                    })
+                }
+                connection.commit((err) => {
+                    if (err) {
+                        connection.rollback(() => {
+                            console.log(err);
+                            connection.release();
+                            res.status(500).send('Internal Server Error!!!');
+                        })
+                    }
+                    console.log('result : ', result);
+                    connection.release();
+                    res.redirect('/item_info/' + pageId);
+                });
+            });
         });
     });
 });
@@ -213,93 +271,93 @@ app.get('/item_delete', (req, res) => {
     var num = req.query.num;
     console.log(num);
     res.redirect('/item_info/' + num);
-//     var num = req.params.num;
-//     let board_check = `
-//         select *
-//         from board
-//         where num = ?
-//     `;
-//     let file_data = `
-//         select * from fileinfo
-//         where num = ?
-//     `;
-//     let file_delete = `
-//         delete from fileinfo
-//         where num = ?
-//     `;
-//     let board_delete = `
-//         delete from board
-//         where num = ?
-//     `;
-//     pool.getConnection((err, connection) => {
-//         connection.query(board_check, [num], (err, check_result) => {
-//             if (err) {
-//                 console.log(err);
-//                 connection.release();
-//                 res.status(500).send('Internal Server Error!!!');
-//             }
-//             if (check_result.length > 0) {
+    //     var num = req.params.num;
+    //     let board_check = `
+    //         select *
+    //         from board
+    //         where num = ?
+    //     `;
+    //     let file_data = `
+    //         select * from fileinfo
+    //         where num = ?
+    //     `;
+    //     let file_delete = `
+    //         delete from fileinfo
+    //         where num = ?
+    //     `;
+    //     let board_delete = `
+    //         delete from board
+    //         where num = ?
+    //     `;
+    //     pool.getConnection((err, connection) => {
+    //         connection.query(board_check, [num], (err, check_result) => {
+    //             if (err) {
+    //                 console.log(err);
+    //                 connection.release();
+    //                 res.status(500).send('Internal Server Error!!!');
+    //             }
+    //             if (check_result.length > 0) {
 
-//                 connection.query(board_check, [num], (err, check_result) => {
-//                     if (err) {
-//                         console.log(err);
-//                         connection.release();
-//                         res.status(500).send('Internal Server Error!!!');
-//                     }
-//                 });
-//                 connection.query(file_data, [num], (err, file_data) => {
-//                     if (err) {
-//                         console.log(err);
-//                         connection.release();
-//                         res.status(500).send('Internal Server Error');
-//                     }
-//                     connection.beginTransaction((err) => {
-//                         if (err) {
-//                             throw err;
-//                         }
-//                         connection.query(file_delete, [num], (err, results, fields) => {
-//                             if (err) {
-//                                 console.log(err);
-//                                 res.status(500).send('Internal Server Error!!!');
-//                             }
-//                             connection.query(board_delete, [num], (err, results, fields) => {
-//                                 if (err) {
-//                                     console.log(err);
-//                                     res.status(500).send('Internal Server Error!!!');
-//                                 }
-//                                 connection.commit((err) => {
-//                                     if (err) {
-//                                         connection.rollback(() => {
-//                                             console.log(err);
-//                                             throw err;
-//                                         });
-//                                     }
+    //                 connection.query(board_check, [num], (err, check_result) => {
+    //                     if (err) {
+    //                         console.log(err);
+    //                         connection.release();
+    //                         res.status(500).send('Internal Server Error!!!');
+    //                     }
+    //                 });
+    //                 connection.query(file_data, [num], (err, file_data) => {
+    //                     if (err) {
+    //                         console.log(err);
+    //                         connection.release();
+    //                         res.status(500).send('Internal Server Error');
+    //                     }
+    //                     connection.beginTransaction((err) => {
+    //                         if (err) {
+    //                             throw err;
+    //                         }
+    //                         connection.query(file_delete, [num], (err, results, fields) => {
+    //                             if (err) {
+    //                                 console.log(err);
+    //                                 res.status(500).send('Internal Server Error!!!');
+    //                             }
+    //                             connection.query(board_delete, [num], (err, results, fields) => {
+    //                                 if (err) {
+    //                                     console.log(err);
+    //                                     res.status(500).send('Internal Server Error!!!');
+    //                                 }
+    //                                 connection.commit((err) => {
+    //                                     if (err) {
+    //                                         connection.rollback(() => {
+    //                                             console.log(err);
+    //                                             throw err;
+    //                                         });
+    //                                     }
 
-//                                     // 정상 commit일때 파일 삭제
-//                                     if (file_data[0].savefolder) {
-//                                         file_data.forEach(function(element, index) {
-//                                             fs.unlink('./uploads/' + element.savefolder + '/' + element.savename, (err) => {
-//                                                 if (err) {
-//                                                     console.log(err);
-//                                                     conn.release();
-//                                                     throw err;
-//                                                 }
-//                                             });
-//                                         });
-//                                     }
-//                                     res.render('item_delete', { pass: true });
-//                                 });
-//                             });
-//                         });
-//                     });
-//                 });
-//             } else {
-//                 connection.release();
-//                 res.render('item_delete', { pass: false });
-//             }
-//         });
-//     });
-//     res.redirect('/');
+    //                                     // 정상 commit일때 파일 삭제
+    //                                     if (file_data[0].savefolder) {
+    //                                         file_data.forEach(function(element, index) {
+    //                                             fs.unlink('./uploads/' + element.savefolder + '/' + element.savename, (err) => {
+    //                                                 if (err) {
+    //                                                     console.log(err);
+    //                                                     conn.release();
+    //                                                     throw err;
+    //                                                 }
+    //                                             });
+    //                                         });
+    //                                     }
+    //                                     res.render('item_delete', { pass: true });
+    //                                 });
+    //                             });
+    //                         });
+    //                     });
+    //                 });
+    //             } else {
+    //                 connection.release();
+    //                 res.render('item_delete', { pass: false });
+    //             }
+    //         });
+    //     });
+    //     res.redirect('/');
 });
 
 app.get('/item_info/:num', (req, res) => {
@@ -307,11 +365,13 @@ app.get('/item_info/:num', (req, res) => {
     const loginid = req.session.userid;
     let item_select = `
         select i.id, i.category, format(i.price, 0) price, format(i.max_price, 0) max_price,
-        time_to_sec(timediff(i.end_time, now())) time,
-        i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3,
-        if(i.end_time > now(), 'true', 'false') flag
-        from item i, users u
+            time_to_sec(timediff(i.end_time, now())) time,
+            i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3,
+            if(i.end_time > now(), 'true', 'false') flag,
+            g.item_id, g.savefolder, g.originalname, g.savename
+        from item i, users u, img g
         where i.id = ?
+        and i.id = g.item_id
         and u.id = i.seller_id
     `;
     let same_category = `
@@ -322,7 +382,7 @@ app.get('/item_info/:num', (req, res) => {
         order by id desc
     `;
     pool.getConnection((err, connection) => {
-        
+
         connection.beginTransaction((err) => {
             connection.query(item_select, [num], (err, results, fields) => {
                 if (err) {
@@ -337,7 +397,7 @@ app.get('/item_info/:num', (req, res) => {
                             connection.release();
                             res.status(500).send('Internal Server Error!!!');
                         })
-                    }     
+                    }
                     connection.commit((err) => {
                         if (err) {
                             connection.rollback(() => {
@@ -348,7 +408,7 @@ app.get('/item_info/:num', (req, res) => {
                         }
                         connection.release();
                         res.render('item_info', { article: results[0], loginid: loginid, category_results: category_results });
-                    });           
+                    });
                 });
             });
         })
@@ -515,10 +575,10 @@ nsp.on('connection', (socket) => {
         num = param;
         id = loginid;
         socket.join(num, () => {
-          io.to(num);
+            io.to(num);
         });
     });
-    socket.on('chat message', (msg) => {            
+    socket.on('chat message', (msg) => {
         let ipchal_update = `
             update item
             set price = ?
@@ -548,7 +608,7 @@ nsp.on('connection', (socket) => {
                         connection.query(bid_insert, [num, id, msg], (err, in_result) => {
                             if (err) {
                                 connection.rollback(() => {
-                                    console.log(err);                           
+                                    console.log(err);
                                     connection.release();
                                     throw err;
                                 })
@@ -556,18 +616,18 @@ nsp.on('connection', (socket) => {
                             connection.commit((err) => {
                                 if (err) {
                                     connection.rollback(() => {
-                                        console.log(err);                           
+                                        console.log(err);
                                         connection.release();
                                         throw err;
-                                    })                                        
+                                    })
                                 }
                                 connection.release();
                                 nsp.to(num).emit('chat message', msg);
                             });
-                        });                        
+                        });
                     }
                 });
-            });     
+            });
         });
     });
     socket.on('disconnect', () => {

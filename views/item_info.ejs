@@ -88,7 +88,7 @@
     <!-- Intro Content -->
     <div class="row">
       <div class="col-lg-6">
-        <img class="img-fluid rounded mb-4" src="http://placehold.it/750x450" alt="">
+        <img class="img-fluid rounded mb-4" src="<%=article.savefolder%>/<%=article.savename%>" height="450"> <!-- 750x450 -->
       </div>
       <div class="col-lg-6">
         <div style="margin-bottom: 15px; color: red;">
@@ -141,7 +141,7 @@
     <!-- /.row -->
     <div style="padding: 15px; border-top: 1.5px solid gray;">
       <h3>상세설명</h3>
-      <div style="overflow-y:scroll; height: 250px;"><%=article.content%></div>
+      <div style="overflow-y:scroll; height: 250px;"><%-article.content%></div>
     </div>
 
     <!-- Our Customers -->
