@@ -57,13 +57,20 @@
                             <option value="051">051</option>
                             <option value="061">061</option>
                         </select> _
-                        <input type="text" class="form-control" id="tel2" name="tel2" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' maxlength=4> _
-                        <input type="text" class="form-control" id="tel3" name="tel3" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' maxlength=4>
+                        <input type="text" class="form-control" id="tel2" name="tel2" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' maxlength=4  value="<%=article.tel2%>"> _
+                        <input type="text" class="form-control" id="tel3" name="tel3" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' maxlength=4  value="<%=article.tel3%>">
                     </div>
                 </div>
                 <div class="form-group" align="left">
                     <label for="">주소</label><br>
-                    <input type="text" class="form-control" id="address" name="address" placeholder="" value="<%=article.address%>">
+                    <input class="form-control" style="width: 40%; display: inline;" name="addr1" id="addr1" type="text" readonly="readonly" value="<%=article.zip_code%>">
+                    <button type="button" class="btn btn-warning" onclick="execPostCode();"><i class="fa fa-search"></i> 우편번호 찾기</button>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" style="top: 5px;" name="addr2" id="addr2" type="text" readonly="readonly"  value="<%=article.address%>"/>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" name="addr3" id="addr3" type="text" value="<%=article.address_detail%>"/>
                 </div>
                 <div class="form-group" align="center">
                     <button type="submit" class="btn btn-primary" id="updateBtn">수정</button>

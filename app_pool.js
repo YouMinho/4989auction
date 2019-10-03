@@ -266,12 +266,14 @@ app.post('/signup', (req, res) => {
     let tel1 = req.body.tel1;
     let tel2 = req.body.tel2;
     let tel3 = req.body.tel3;
-    let address = req.body.address;
+    let zip_code = req.body.addr1;
+    let address = req.body.addr2;
+    let address_detail = req.body.addr3;
 
     let values = [id, password, "G", name, emailid, emaildomain, tel1, tel2, tel3, address];
     let users_insert = `
-    insert into users (id, password, grade, name, emailid, emaildomain, tel1, tel2, tel3, address)
-    values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    insert into users (id, password, grade, name, emailid, emaildomain, tel1, tel2, tel3, zip_code, address, address_detail)
+    values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     pool.getConnection((err, connection) => {
         connection.query(users_insert, values, (err, result) => {
@@ -370,14 +372,16 @@ app.post('/mypage', (req, res) => {
     let tel1 = req.body.tel1;
     let tel2 = req.body.tel2;
     let tel3 = req.body.tel3;
-    let address = req.body.address;
+    let zip_code = req.body.addr1;
+    let address = req.body.addr2;
+    let address_detail = req.body.addr3;
 
     console.log(req.body);
-    let values = [password, name, emailid, emaildomain, tel1, tel2, tel3, address, id];
+    let values = [password, name, emailid, emaildomain, tel1, tel2, tel3, zip_code, address, address_detail, id];
     let users_update = `
     update users set
     password=?, name=?, emailid=?, emaildomain=?, 
-    tel1=?, tel2=?, tel3=?, address=?
+    tel1=?, tel2=?, tel3=?, zip_code=?, address=?, address_detail=?
     where id=?
     `;
     pool.getConnection((err, connection) => {
