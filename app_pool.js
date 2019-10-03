@@ -206,7 +206,10 @@ app.get('/item_info/:num', (req, res) => {
     const num = req.params.num
     const loginid = req.session.userid;
     let item_select = `
-        select i.id, i.category, format(i.price, 0) price, format(i.max_price, 0) max_price, time_to_sec(timediff(i.end_time, now())) time, i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3
+        select i.id, i.category, format(i.price, 0) price, format(i.max_price, 0) max_price,
+        time_to_sec(timediff(i.end_time, now())) time,
+        i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3,
+        if(i.end_time > now(), 'true', 'false') flag
         from item i, users u
         where i.id = ?
         and u.id = i.seller_id
@@ -423,6 +426,7 @@ nsp.on('connection', (socket) => {
             and price < ?
             and max_price >= ?
             and seller_id != ?
+            and end_time > now()
         `;
         let bid_insert = `
             insert into bid (item_id, bidder_id, price, time)
