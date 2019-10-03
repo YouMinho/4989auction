@@ -306,7 +306,7 @@ app.get('/mypage', (req, res) => {
         where id = ?
     `;
     let item_data_query = `
-        select title
+        select title, id
         from item
         where seller_id = ?
     `;
