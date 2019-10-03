@@ -25,6 +25,8 @@ app.use(session({
 }));
 
 app.use(function(req, res, next) {
+    req.session.userid = 'jiin';
+    req.session.name = 'jiin';
     res.locals.user = req.session;
     res.locals.data = list_query_data;
     next();

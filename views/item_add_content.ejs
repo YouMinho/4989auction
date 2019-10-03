@@ -33,7 +33,7 @@
   </div>
   <div class="container mb-4" id="content">
     <!-- Page Heading/Breadcrumbs -->
-    <form class="form-horizontal" name="content_form" method="post" onkeydown="return captureReturnKey(event)">
+    <form class="form-horizontal" name="content_form" method="POST" action="/item_add_content" onkeydown="return captureReturnKey(event)">
       <div class="form-group">
         <label class="col-sm-2 control-label">카테고리</label>
         <div class="col-sm-10">
@@ -98,7 +98,7 @@
   // iframe parent window 
   function checkForm(){ 
       document.content_form.target="_parent"; 
-      document.content_form.submit(); 
+      // document.content_form.submit(); 
   } 
   </script>
 
