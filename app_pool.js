@@ -238,7 +238,7 @@ app.post('/signup', (req, res) => {
     let tel1 = req.body.tel1;
     let tel2 = req.body.tel2;
     let tel3 = req.body.tel3;
-    let address = req.body.address;
+    let address = req.body.addr2;
 
     let values = [id, password, "G", name, emailid, emaildomain, tel1, tel2, tel3, address];
     let users_insert = `
@@ -342,7 +342,7 @@ app.post('/mypage', (req, res) => {
     let tel1 = req.body.tel1;
     let tel2 = req.body.tel2;
     let tel3 = req.body.tel3;
-    let address = req.body.address;
+    let address = req.body.addr2;
 
     console.log(req.body);
     let values = [password, name, emailid, emaildomain, tel1, tel2, tel3, address, id];
