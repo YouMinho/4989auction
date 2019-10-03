@@ -204,21 +204,49 @@ app.get('/item_info/:num', (req, res) => {
     const num = req.params.num
     const loginid = req.session.userid;
     let item_select = `
-        select i.id, format(i.price, 0) price, format(i.max_price, 0) max_price, time_to_sec(timediff(i.end_time, now())) time, i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3
+        select i.id, i.category, format(i.price, 0) price, format(i.max_price, 0) max_price, time_to_sec(timediff(i.end_time, now())) time, i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3
         from item i, users u
         where i.id = ?
         and u.id = i.seller_id
     `;
+    let same_category = `
+        select id, title 
+        from item
+        where category = ?
+        and id != ?
+        order by id desc
+    `;
     pool.getConnection((err, connection) => {
-        connection.query(item_select, [num], (err, results, fields) => {
-            if (err) {
-                console.log(err);
-                connection.release();
-                res.status(500).send('Internal Server Error!!!');
-            }
-            connection.release();
-            res.render('item_info', { article: results[0], loginid: loginid });
-        });
+        
+        connection.beginTransaction((err) => {
+            connection.query(item_select, [num], (err, results, fields) => {
+                if (err) {
+                    console.log(err);
+                    connection.release();
+                    res.status(500).send('Internal Server Error!!!');
+                }
+                connection.query(same_category, [results[0].category, results[0].id], (err, category_results, fields) => {
+                    if (err) {
+                        connection.rollback(() => {
+                            console.log(err);
+                            connection.release();
+                            res.status(500).send('Internal Server Error!!!');
+                        })
+                    }     
+                    connection.commit((err) => {
+                        if (err) {
+                            connection.rollback(() => {
+                                console.log(err);
+                                connection.release();
+                                res.status(500).send('Internal Server Error!!!');
+                            })
+                        }
+                        connection.release();
+                        res.render('item_info', { article: results[0], loginid: loginid, category_results: category_results });
+                    });           
+                });
+            });
+        })
     });
 });
 
@@ -388,6 +416,7 @@ nsp.on('connection', (socket) => {
             where id = ?
             and price < ?
             and max_price >= ?
+            and seller_id != ?
         `;
         let bid_insert = `
             insert into bid (item_id, bidder_id, price, time)
@@ -399,7 +428,7 @@ nsp.on('connection', (socket) => {
                     connection.release();
                     throw err;
                 }
-                connection.query(ipchal_update, [msg, num, msg, msg], (err, up_result) => {
+                connection.query(ipchal_update, [msg, num, msg, msg, id], (err, up_result) => {
                     if (err) {
                         connection.release();
                         console.log(err);

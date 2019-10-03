@@ -144,27 +144,28 @@
     </div>
 
     <!-- Our Customers -->
-    <h2>같은 카테고리의 다른 상품</h2>
-    <div class="row">
-      <div class="col-lg-2 col-sm-4 mb-4">
-        <img class="img-fluid" src="http://placehold.it/500x300" alt="">
-      </div>
-      <div class="col-lg-2 col-sm-4 mb-4">
-        <img class="img-fluid" src="http://placehold.it/500x300" alt="">
-      </div>
-      <div class="col-lg-2 col-sm-4 mb-4">
-        <img class="img-fluid" src="http://placehold.it/500x300" alt="">
-      </div>
-      <div class="col-lg-2 col-sm-4 mb-4">
-        <img class="img-fluid" src="http://placehold.it/500x300" alt="">
-      </div>
-      <div class="col-lg-2 col-sm-4 mb-4">
-        <img class="img-fluid" src="http://placehold.it/500x300" alt="">
-      </div>
-      <div class="col-lg-2 col-sm-4 mb-4">
-        <img class="img-fluid" src="http://placehold.it/500x300" alt="">
-      </div>
-    </div>
+    <% if(category_results.length) { %>
+      <h2>같은 카테고리의 다른 상품</h2>
+      <% let len = category_results.length %>
+      <% if(category_results.length > 6) { %>
+        <% len = 6 %>
+      <% } %>
+      <div class="row">
+          <% for(let i = 0; i < len; i++) { %>
+          <div class="col-lg-2 col-sm-4 mb-4">
+              <div class="hovereffect">
+                  <img src="http://placehold.it/700x400" alt="">
+                  <div class="overlay">
+                      <a class="info" href="/item_info/<%= category_results[i].id %>">
+                          <div><%=category_results[i].title %></div>
+                      </a>
+                  </div>
+              </div>
+          </div>
+          <% } %>
+        </div>
+    <%} %>
+    
     <!-- /.row -->
 
   </div>
@@ -178,5 +179,9 @@
   <script src="/js/signup.js"></script>
 
 </body>
+
+
+
+
 
 </html>
