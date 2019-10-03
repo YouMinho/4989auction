@@ -108,7 +108,12 @@
             <div class="input-group" style="width: 450px;">
               <input id="money" type="text" style="width: 300px;" name="input_price" class="form-control" placeholder="금액을 입력하세요." onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' maxlength=8>
               <span class="input-group-btn">
+                  <% if(user.userid) { %>
                 <button id="ipchal" style="margin-left: 15px;" class="btn btn-secondary" type="submit">입찰하기!</button>
+                <% } else { %>
+                  <button id="ipchal" style="margin-left: 15px;" class="btn btn-secondary" type="submit" disabled="disabled">입찰하기!</button>
+                  <% } %>
+
               </span>
             </div>
             <div style="color : gray; font-size: 80%; padding-bottom: 20px; padding: 5px 0 0 20px;">※ 주의사항 : 숫자만 입력하세요.
