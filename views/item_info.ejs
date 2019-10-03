@@ -155,7 +155,7 @@
           <% for(let i = 0; i < len; i++) { %>
           <div class="col-lg-2 col-sm-4 mb-4">
               <div class="hovereffect">
-                  <img src="http://placehold.it/700x400" alt="">
+                  <img src="<%=article.savefolder%>/<%=article.savename%>" alt="">
                   <div class="overlay">
                       <a class="info" href="/item_info/<%= category_results[i].id %>">
                           <div><%=category_results[i].title %></div>
