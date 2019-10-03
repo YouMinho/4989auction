@@ -25,8 +25,8 @@ app.use(session({
 }));
 
 app.use(function(req, res, next) {
-    req.session.userid = 'jiin';
-    req.session.name = 'jiin';
+    req.session.userid = 'test';
+    req.session.name = 'test';
     res.locals.user = req.session;
     res.locals.data = list_query_data;
     next();
@@ -172,13 +172,12 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/item_add', (req, res) => {
-    res.render('item_add')
-    let seller_id = req.session.userid;
-})
+    res.render('item_add');
+});
 
 app.get('/item_add_content', (req, res) => {
-    res.render('item_add_content')
-})
+    res.render('item_add_content');
+});
 
 app.post('/item_add_content', (req, res) => {
     let seller_id = req.session.userid;
@@ -200,6 +199,107 @@ app.post('/item_add_content', (req, res) => {
             res.redirect('/item_info/' + result.insertId);
         });
     });
+});
+
+app.get('/item_modify', (req, res) => {
+    res.render('item_modify');
+});
+
+app.get('/item_modify_content', (req, res) => {
+    res.render('item_modify_content');
+});
+
+app.get('/item_delete', (req, res) => {
+    var num = req.query.num;
+    console.log(num);
+    res.redirect('/item_info/' + num);
+//     var num = req.params.num;
+//     let board_check = `
+//         select *
+//         from board
+//         where num = ?
+//     `;
+//     let file_data = `
+//         select * from fileinfo
+//         where num = ?
+//     `;
+//     let file_delete = `
+//         delete from fileinfo
+//         where num = ?
+//     `;
+//     let board_delete = `
+//         delete from board
+//         where num = ?
+//     `;
+//     pool.getConnection((err, connection) => {
+//         connection.query(board_check, [num], (err, check_result) => {
+//             if (err) {
+//                 console.log(err);
+//                 connection.release();
+//                 res.status(500).send('Internal Server Error!!!');
+//             }
+//             if (check_result.length > 0) {
+
+//                 connection.query(board_check, [num], (err, check_result) => {
+//                     if (err) {
+//                         console.log(err);
+//                         connection.release();
+//                         res.status(500).send('Internal Server Error!!!');
+//                     }
+//                 });
+//                 connection.query(file_data, [num], (err, file_data) => {
+//                     if (err) {
+//                         console.log(err);
+//                         connection.release();
+//                         res.status(500).send('Internal Server Error');
+//                     }
+//                     connection.beginTransaction((err) => {
+//                         if (err) {
+//                             throw err;
+//                         }
+//                         connection.query(file_delete, [num], (err, results, fields) => {
+//                             if (err) {
+//                                 console.log(err);
+//                                 res.status(500).send('Internal Server Error!!!');
+//                             }
+//                             connection.query(board_delete, [num], (err, results, fields) => {
+//                                 if (err) {
+//                                     console.log(err);
+//                                     res.status(500).send('Internal Server Error!!!');
+//                                 }
+//                                 connection.commit((err) => {
+//                                     if (err) {
+//                                         connection.rollback(() => {
+//                                             console.log(err);
+//                                             throw err;
+//                                         });
+//                                     }
+
+//                                     // 정상 commit일때 파일 삭제
+//                                     if (file_data[0].savefolder) {
+//                                         file_data.forEach(function(element, index) {
+//                                             fs.unlink('./uploads/' + element.savefolder + '/' + element.savename, (err) => {
+//                                                 if (err) {
+//                                                     console.log(err);
+//                                                     conn.release();
+//                                                     throw err;
+//                                                 }
+//                                             });
+//                                         });
+//                                     }
+//                                     res.render('item_delete', { pass: true });
+//                                 });
+//                             });
+//                         });
+//                     });
+//                 });
+//             } else {
+//                 connection.release();
+//                 res.render('item_delete', { pass: false });
+//             }
+//         });
+//     });
+//     res.redirect('/');
 });
 
 app.get('/item_info/:num', (req, res) => {
