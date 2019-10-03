@@ -7,17 +7,12 @@
     <script>
         let time = '<%= article.time %>';
         let d = parseInt(time / (60*60*24));
-        console.log(d);
         time -= d * (60*60*24);
         let h = parseInt(time / (60 * 60));
-        console.log(h);
         time -= h * (60*60);
         let m = parseInt(time / 60);
-        console.log(m);
         time -= m * (60);
-        let s = time;
-        console.log(s);
-        
+        let s = time;        
         
         function time_load() {
             s--;
@@ -37,13 +32,13 @@
                 s = 59;
             }
             if (d == -1) {
-                d = 0;
+                clearInterval(time_load);
             }
             $("#time").text(d + '일 '+ h + '시간 ' + m + '분 ' + s + '초');
         }
         $(document).ready(() => {
             $("#time").text(d + '일 '+ h + '시간 ' + m + '분 ' + s + '초');
-            setInterval("time_load()", 1000)
+            let time_load = setInterval("time_load()", 1000)
         })
     </script>
     
@@ -51,9 +46,15 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       $(() => {
+        
+        let loginid = '<%= loginid %>';
+        console.log(loginid);
+        
         let url = window.location.href;
-        const param = url.substring(url.lastIndexOf('/'));
-        socket = io(param);
+        let num = url.substring(url.lastIndexOf('/')+1);
+        
+        socket = io('/nsp');
+        socket.emit('joinRoom', num, loginid);
         
         $('form').submit(() => {
           socket.emit('chat message', $('#money').val());
@@ -64,6 +65,9 @@
           
           $('#price').text(msg)
         });
+        socket.on('joinRoom', (num)=> {
+            $('#price').html(num);
+        })
       });
     </script>
   <%- include('./includes/logo.ejs') %>

@@ -5,11 +5,15 @@
             <div class="overlay">
                 <a class="info" href="/item_info/<%= c_article[i].id %>">
                     <div>
+                        <span>제목 : </span>
+                        <span><%=c_article[i].title %></span>
+                    </div>
+                    <div>
                         <span>현재가격 : </span>
                         <span><%=c_article[i].price %></span>
                     </div>
                     <div>
-                        <span>남은시간 : </span>
+                        <span>종료시각 : </span>
                         <span><%= c_article[i].time %></span>
                     </div>
                 </a>

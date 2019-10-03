@@ -5,12 +5,17 @@
             <img src="http://placehold.it/700x400" alt="">
             <div class="overlay">
                 <a class="info" href="/item_info/<%= h_article[i].id %>">
+
+                    <div>
+                        <span>제목 : </span>
+                        <span><%=h_article[i].title %></span>
+                    </div>
                     <div>
                         <span>현재가격 : </span>
                         <span><%= h_article[i].price %></span>
                     </div>
                     <div>
-                        <span>남은시간 : </span>
+                        <span> 종료시각 : </span>
                         <span><%= h_article[i].time %></span>
                     </div>
                 </a>

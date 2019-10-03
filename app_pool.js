@@ -72,12 +72,12 @@ app.get('/', (req, res) => {
     else page = 1;
 
     let hot_item = `
-        select id, hit, format(max_price, 0) price, end_time
+        select id, hit, format(price, 0) price, DATE_FORMAT(end_time, "%Y-%m-%d %H:%i:%s ") time, title
         from item
         order by hit desc
     `;
     let category_item = `
-        select id, category, hit, format(max_price, 0) price, end_time
+        select id, category, hit, format(price, 0) price, DATE_FORMAT(end_time, "%Y-%m-%d %H:%i:%s ") time, title
         from item
         where title like ? and category like ?
         order by id desc
@@ -202,36 +202,7 @@ app.post('/item_add_content', (req, res) => {
 
 app.get('/item_info/:num', (req, res) => {
     const num = req.params.num
-    const nsp = io.of('/' + num)
-    nsp.on('connection', (socket) => {
-        console.log('a user connected');
-        socket.on('chat message', (msg) => {
-            let ipchal_update = `
-            update item
-            set price = ?
-            where id = ?
-            and price < ?
-            and max_price >= ?
-        `;
-            pool.getConnection((err, connection) => {
-                connection.query(ipchal_update, [msg, num, msg, msg], (err, result) => {
-                    if (err) {
-                        console.log(err);
-                        connection.release();
-                    }
-
-                    if (result.changedRows == 1) {
-                        connection.release();
-                        nsp.emit('chat message', msg);
-                    }
-                });
-            });
-        });
-        socket.on('disconnect', () => {
-            console.log('user disconnected');
-        });
-    });
-
+    const loginid = req.session.userid;
     let item_select = `
         select i.id, format(i.price, 0) price, format(i.max_price, 0) max_price, time_to_sec(timediff(i.end_time, now())) time, i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3
         from item i, users u
@@ -246,7 +217,7 @@ app.get('/item_info/:num', (req, res) => {
                 res.status(500).send('Internal Server Error!!!');
             }
             connection.release();
-            res.render('item_info', { article: results[0] });
+            res.render('item_info', { article: results[0], loginid: loginid });
         });
     });
 });
@@ -321,7 +292,7 @@ app.post('/find_idpw', (req, res) => {
                 });
             } else {
                 connection.release();
-                res.render('find_inpw', { msg: "등록된 계정이 없습니다." });
+                res.render('find_idpw', { msg: "등록된 계정이 없습니다." });
             }
         })
     });
@@ -395,5 +366,72 @@ app.post('/mypage', (req, res) => {
                 res.redirect('/');
             });
         });
+    });
+});
+
+const nsp = io.of('/nsp')
+nsp.on('connection', (socket) => {
+    let num;
+    let id;
+    console.log('a user connected');
+    socket.on('joinRoom', (param, loginid) => {
+        num = param;
+        id = loginid;
+        socket.join(num, () => {
+          io.to(num);
+        });
+    });
+    socket.on('chat message', (msg) => {            
+        let ipchal_update = `
+            update item
+            set price = ?
+            where id = ?
+            and price < ?
+            and max_price >= ?
+        `;
+        let bid_insert = `
+            insert into bid (item_id, bidder_id, price, time)
+            values (?, ?, ?, now())
+        `;
+        pool.getConnection((err, connection) => {
+            connection.beginTransaction((err) => {
+                if (err) {
+                    connection.release();
+                    throw err;
+                }
+                connection.query(ipchal_update, [msg, num, msg, msg], (err, up_result) => {
+                    if (err) {
+                        connection.release();
+                        console.log(err);
+                        throw err;
+                    }
+                    if (up_result.changedRows == 1) {
+                        connection.query(bid_insert, [num, id, msg], (err, in_result) => {
+                            if (err) {
+                                connection.rollback(() => {
+                                    console.log(err);                           
+                                    connection.release();
+                                    throw err;
+                                })
+                            }
+                            connection.commit((err) => {
+                                if (err) {
+                                    connection.rollback(() => {
+                                        console.log(err);                           
+                                        connection.release();
+                                        throw err;
+                                    })                                        
+                                }
+                                connection.release();
+                                nsp.to(num).emit('chat message', msg);
+                            });
+                        });                        
+                    }
+                });
+            });     
+        });
+    });
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
     });
 });
