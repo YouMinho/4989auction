@@ -369,10 +369,11 @@ app.get('/item_info/:num', (req, res) => {
             i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3,
             if(i.end_time > now(), 'true', 'false') flag,
             g.item_id, g.savefolder, g.originalname, g.savename
-        from item i, users u, img g
+        from users u join item i
+        on u.id = i.seller_id
+        left outer join img g
+        on i.id = g.item_id
         where i.id = ?
-        and i.id = g.item_id
-        and u.id = i.seller_id
     `;
     let same_category = `
         select id, title 
