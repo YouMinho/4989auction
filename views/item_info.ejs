@@ -88,7 +88,7 @@
     <!-- Intro Content -->
     <div class="row">
       <div class="col-lg-6">
-        <img style="width: 100%; max-height: 300px" class="img-fluid rounded mb-4" src="<%=article.savefolder%>/<%=article.savename%>"> <!-- 750x450 -->
+        <img style="width: 100%; min-height: 300px; max-height: 300px" class="img-fluid rounded mb-4" src="<%=article.savefolder%>/<%=article.savename%>"> <!-- 750x450 -->
       </div>
       <div class="col-lg-6">
         <div style="margin-bottom: 15px; color: red;">
@@ -155,7 +155,7 @@
           <% for(let i = 0; i < len; i++) { %>
           <div class="col-lg-2 col-sm-4 mb-4">
               <div class="hovereffect">
-                <img style="width: 100%; max-height: 96px" src="<%= category_results[i].savefolder%>/<%= category_results[i].savename%>" alt="">
+                <img style="width: 100%; min-height: 96px; max-height: 96px" src="<%= category_results[i].savefolder%>/<%= category_results[i].savename%>" alt="">
                 <div class="overlay">
                       <a class="info" href="/item_info/<%= category_results[i].id %>">
                           <div><%=category_results[i].title %></div>
