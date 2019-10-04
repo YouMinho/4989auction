@@ -46,7 +46,7 @@ var upload = multer({ storage: storage });
 app.locals.pretty = true;
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 app.use(express.static('public'));
-app.use('/item_info', express.static('uploads'));
+app.use(['/item_info','/'], express.static('uploads'));
 
 app.use(session({
     secret: '@#@$MYSIGN#@$#$',
@@ -104,13 +104,18 @@ app.get('/', (req, res) => {
     else page = 1;
 
     let hot_item = `
-        select id, hit, format(price, 0) price, DATE_FORMAT(end_time, "%Y-%m-%d %H:%i:%s ") time, title
-        from item
+        select i.id, i.hit, format(i.price, 0) price, DATE_FORMAT(i.end_time, "%Y-%m-%d %H:%i:%s ") time, i.title,
+        g.savefolder, g.savename
+        from item i
+        left outer join img g on i.id = g.item_id
         order by hit desc
+        limit 0,3;
     `;
     let category_item = `
-        select id, category, hit, format(price, 0) price, DATE_FORMAT(end_time, "%Y-%m-%d %H:%i:%s ") time, title
-        from item
+        select i.id, i.category, i.hit, format(i.price, 0) price, DATE_FORMAT(i.end_time, "%Y-%m-%d %H:%i:%s ") time, i.title,
+        g.savefolder, g.savename
+        from item i
+        left outer join img g on i.id = g.item_id
         where title like ? and category like ?
         order by id desc
         LIMIT ?, ?
@@ -139,7 +144,7 @@ app.get('/', (req, res) => {
                         console.log(err);
                         connection.release();
                         res.status(500).send('Internal Server Error!!!')
-                    }
+                    }                    
                     connection.release();
                     res.render('main', { h_article: h_results, c_article: c_results, category: 'main', cont: parseInt(countse[0].num) / 10 });
                 });
