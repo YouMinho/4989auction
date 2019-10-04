@@ -2,7 +2,7 @@
 <% for(let i = 0; i < 3; i++) { %>
     <div class="col-lg-4 col-sm-6 portfolio-item">
         <div class="hovereffect">
-            <img src="<%=h_article[i].savefolder%>/<%=h_article[i].savename%>" alt="">
+            <img style="width: 100%; max-height: 200px" src="<%=h_article[i].savefolder%>/<%=h_article[i].savename%>" alt="">
             <div class="overlay">
                 <a class="info" href="/item_info/<%= h_article[i].id %>">
 
