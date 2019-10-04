@@ -83,9 +83,16 @@
         <script>
          
           function xx() {
-        var value1 = $('#min_price').val();
-         var value2 = $('#max_price').val();
-         if (value1>= value2) {
+            let min = $('#min_price').val()
+            min = parseInt(min.replace(/,/gi, ''));
+            let max = $('#max_price').val()
+            max = parseInt(max.replace(/,/gi, ''));
+            
+            console.log(min);
+            console.log(max);
+            
+
+         if (min >= max) {
             alert('가격을 다시확인 하세요');
             event.preventDefault();
          }
@@ -104,6 +111,11 @@
   </div>
   <!-- /.container -->
 </body>
+<script type="text/javascript" src="/js/simple.money.format.js"></script>
+	<script type="text/javascript">
+    $('#min_price').simpleMoneyFormat();
+    $('#max_price').simpleMoneyFormat();
+</script>
 
 <script>
   // iframe parent window 

@@ -218,7 +218,10 @@ app.get('/item_add_content', (req, res) => {
 
 app.post('/item_add_content', upload.single('img'), (req, res) => {
     let seller_id = req.session.userid;
-    let values = [seller_id, req.body.category, req.body.title, req.body.content, req.body.min_price, req.body.max_price, req.body.min_price];
+    let min_price = req.body.min_price.replace(/,/gi, '');
+    let max_price = req.body.max_price.replace(/,/gi, '');
+    
+    let values = [seller_id, req.body.category, req.body.title, req.body.content, min_price, max_price, min_price];
     let item_insert = `
         insert into item (seller_id, category, title, content, min_price, max_price, start_time, end_time, price)
         values (?, ?, ?, ?, ?, ?, now(), DATE_ADD(NOW(), INTERVAL 7 DAY), ?)
@@ -227,8 +230,6 @@ app.post('/item_add_content', upload.single('img'), (req, res) => {
         insert into img (savefolder, originalname, savename, item_id)
         values (?, ?, ?, ?)
     `;
-    console.log(values);
-    console.log(req.file);
 
     pool.getConnection((err, connection) => {
         connection.query(item_insert, values, (err, result) => {
