@@ -75,10 +75,13 @@
                 </div>
                 <script>
                 function xx() {
-                    var value1 = $('#min_price').val();
-                    var value2 = $('#max_price').val();
+                    let min = $('#min_price').val();
+                    min = parseInt(min.replace(/,/gi, ''));
+                    let max = $('#max_price').val();
+                    max = parseInt(max.replace(/,/gi, ''));
                     var filena = $('#filena').val();
-                    if (value1 >= value2) {
+                    
+                    if (min >= max) {
                         alert('가격을 다시확인 하세요');
                         event.preventDefault();
                     }
