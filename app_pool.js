@@ -79,7 +79,9 @@ http.listen(8888, () => {
     console.log('8888 port opened!!!');
 })
 //-----------DB------------------
-
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 app.get('/', (req, res) => {
     let category, key, page;
 
@@ -630,7 +632,7 @@ nsp.on('connection', (socket) => {
                                     })
                                 }
                                 connection.release();
-                                nsp.to(num).emit('chat message', msg);
+                                nsp.to(num).emit('chat message', numberWithCommas(msg));
                             });
                         });
                     }

@@ -55,16 +55,16 @@
         socket.emit('joinRoom', num, loginid);       
         
         $('form').submit(() => {
-            socket.emit('chat message', $('#money').val());
+            let inputstr = $('#money').val();
+            let sendstr = inputstr.replace(/,/gi, '');
+            socket.emit('chat message', sendstr);
             $('#money').val('');
             return false;
         });
-        socket.on('chat message', (msg) => {
+        socket.on('chat message', (msg) => {            
+            
             $('#price').text(msg)
         });
-        socket.on('joinRoom', (num)=> {
-            $('#price').html(num);
-        })
       });
     </script>
   <%- include('./includes/logo.ejs') %>
@@ -84,7 +84,7 @@
         <a href="/item_delete?num=<%=article.id%>"><button class="btn btn-dark btn-sm" type="button" id="delete">삭제</button></a>
       </div>
     </ol>
-
+    
     <!-- Intro Content -->
     <div class="row">
       <div class="col-lg-6">
@@ -178,6 +178,11 @@
   <script src="/vendor/jquery/jquery.min.js"></script>
   <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="/js/signup.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+	<script type="text/javascript" src="/js/simple.money.format.js"></script>
+	<script type="text/javascript">
+    $('#money').simpleMoneyFormat();
+	</script>
 
 </body>
 
