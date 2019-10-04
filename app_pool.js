@@ -381,11 +381,13 @@ app.get('/item_info/:num', (req, res) => {
         where i.id = ?
     `;
     let same_category = `
-        select id, title 
-        from item
+        select i.id, i.title, g.savefolder, g.savename
+        from item i
+        left outer join img g
+        on i.id = g.item_id
         where category = ?
-        and id != ?
-        order by id desc
+        and i.id != ?
+        order by i.id desc
     `;
     pool.getConnection((err, connection) => {
 
@@ -411,7 +413,7 @@ app.get('/item_info/:num', (req, res) => {
                                 connection.release();
                                 res.status(500).send('Internal Server Error!!!');
                             })
-                        }
+                        }                        
                         connection.release();
                         res.render('item_info', { article: results[0], loginid: loginid, category_results: category_results });
                     });
