@@ -256,6 +256,7 @@ app.post('/item_add_content', upload.single('img'), (req, res) => {
                             res.status(500).send('Internal Server Error!!!');
                         })
                     }
+                    console.log('result : ', result);
                     connection.release();
                     res.redirect('/item_info/' + pageId);
                 });
@@ -265,62 +266,11 @@ app.post('/item_add_content', upload.single('img'), (req, res) => {
 });
 
 app.get('/item_modify', (req, res) => {
-    let num = req.query.num;
-
-    let item_select = `
-        select * 
-        from item
-        where id = ?
-    `;
-
-    pool.getConnection((err, connection) => {
-        connection.query(item_select, num, (err, result) => {
-            if (err) {
-                console.log(err);
-                connection.release();
-                res.status(500).send('Internal Server Error!!!');
-            }
-            res.render('item_modify', { article: result[0] });
-        });
-    });
+    res.render('item_modify');
 });
 
 app.get('/item_modify_content', (req, res) => {
     res.render('item_modify_content');
-});
-
-app.post('/item_modify_content', (req, res) => {
-    let content = req.body.content;
-    let id = req.body.id;
-
-    let item_update = `
-        update item
-        set content = ?
-        where id = ?
-    `;
-
-    let values = [content, id];
-
-    pool.getConnection((err, connection) => {
-        connection.query(item_update, values, (err, result) => {
-            if (err) {
-                console.log(err);
-                connection.release();
-                res.status(500).send('Internal Server Error!!!');
-            }
-            connection.commit((err) => {
-                if (err) {
-                    connection.rollback(() => {
-                        console.log(err);
-                        connection.release();
-                        res.status(500).send('Internal Server Error!!!');
-                    })
-                }
-                connection.release();
-                res.redirect('/item_info/' + id);
-            });
-        });
-    });
 });
 
 app.get('/item_delete', (req, res) => {
@@ -526,6 +476,12 @@ app.get('/mypage', (req, res) => {
         from item
         where seller_id = ?
     `;
+    let cham_data_query =`
+        select item.title tit, item.id itid
+        from bid, item
+        where bid.item_id = item.id
+        and bid.bidder_id = ?;
+    `
     pool.getConnection((err, connection) => {
         connection.query(user_data_query, [userid], (err, results, fields) => {
             if (err) {
@@ -539,9 +495,15 @@ app.get('/mypage', (req, res) => {
                     connection.release();
                     res.status(500).send('Internal Server Error!!!')
                 }
-                console.log(itemresults);
+                connection.query(cham_data_query, [userid], (err, kint, fields) => {
+                if (err) {
+                    console.log(err);
+                    connection.release();
+                    res.status(500).send('Internal Server Error!!!')
+                }
                 connection.release();
-                res.render('mypage', { article: results[0], itresult: itemresults });
+                res.render('mypage', { article: results[0], itresult: itemresults, itemresult: kint });
+            });
             });
         });
     });
