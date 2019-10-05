@@ -55,8 +55,6 @@ app.use(session({
 }));
 
 app.use(function (req, res, next) {
-    req.session.userid = 'test';
-    req.session.name = 'test';
     res.locals.user = req.session;
     res.locals.data = list_query_data;
     next();
@@ -592,7 +590,7 @@ nsp.on('connection', (socket) => {
     socket.on('chat message', (msg) => {
         let ipchal_update = `
             update item
-            set price = ?
+            set price = ?, bidder_id = ?
             where id = ?
             and price < ?
             and max_price >= ?
@@ -609,7 +607,7 @@ nsp.on('connection', (socket) => {
                     connection.release();
                     throw err;
                 }
-                connection.query(ipchal_update, [msg, num, msg, msg, id], (err, up_result) => {
+                connection.query(ipchal_update, [msg, id, num, msg, msg, id], (err, up_result) => {
                     if (err) {
                         connection.release();
                         console.log(err);
