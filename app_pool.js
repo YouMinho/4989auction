@@ -256,7 +256,6 @@ app.post('/item_add_content', upload.single('img'), (req, res) => {
                             res.status(500).send('Internal Server Error!!!');
                         })
                     }
-                    console.log('result : ', result);
                     connection.release();
                     res.redirect('/item_info/' + pageId);
                 });
@@ -281,7 +280,6 @@ app.get('/item_modify', (req, res) => {
                 connection.release();
                 res.status(500).send('Internal Server Error!!!');
             }
-            console.log(result);
             res.render('item_modify', { article: result[0] });
         });
     });
@@ -294,9 +292,6 @@ app.get('/item_modify_content', (req, res) => {
 app.post('/item_modify_content', (req, res) => {
     let content = req.body.content;
     let id = req.body.id;
-
-    console.log(content);
-    console.log(id);
 
     let item_update = `
         update item
@@ -321,7 +316,6 @@ app.post('/item_modify_content', (req, res) => {
                         res.status(500).send('Internal Server Error!!!');
                     })
                 }
-                console.log('result : ', result);
                 connection.release();
                 res.redirect('/item_info/' + id);
             });
