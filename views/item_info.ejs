@@ -80,8 +80,10 @@
       </li> -->
       <li class="breadcrumb-item col-9 mt-1"><%=article.category%></li>
       <div class="col-3" style="text-align: right">
+        <% if(user.userid == article.seller_id ) { %>
         <a href="/item_modify"><button class="btn btn-dark btn-sm" type="button" id="modify">수정</button></a>
         <a href="/item_delete?num=<%=article.id%>"><button class="btn btn-dark btn-sm" type="button" id="delete">삭제</button></a>
+        <% }%>
       </div>
     </ol>
     
