@@ -275,7 +275,6 @@ app.get('/item_modify_content', (req, res) => {
 
 app.get('/item_delete', (req, res) => {
     var num = req.query.num;
-    console.log(num);
 
     let img_data = `
         select *
@@ -319,6 +318,12 @@ app.get('/item_delete', (req, res) => {
 app.get('/item_info/:num', (req, res) => {
     const num = req.params.num
     const loginid = req.session.userid;
+
+    let hit_update = `
+        update item
+        set hit= hit+1
+        where id=?
+    `;
     let item_select = `
         select i.id, i.category, format(i.price, 0) price, format(i.max_price, 0) max_price,
             time_to_sec(timediff(i.end_time, now())) time,
@@ -340,24 +345,22 @@ app.get('/item_info/:num', (req, res) => {
         and i.id != ?
         order by i.id desc
     `;
-    pool.getConnection((err, connection) => {
 
+    pool.getConnection((err, connection) => {
         connection.beginTransaction((err) => {
-            connection.query(item_select, [num], (err, results, fields) => {
+            connection.query(hit_update, [num], (err) => {
                 if (err) {
                     console.log(err);
                     connection.release();
                     res.status(500).send('Internal Server Error!!!');
                 }
-                connection.query(same_category, [results[0].category, results[0].id], (err, category_results, fields) => {
+                connection.query(item_select, [num], (err, results, fields) => {
                     if (err) {
-                        connection.rollback(() => {
-                            console.log(err);
-                            connection.release();
-                            res.status(500).send('Internal Server Error!!!');
-                        })
+                        console.log(err);
+                        connection.release();
+                        res.status(500).send('Internal Server Error!!!');
                     }
-                    connection.commit((err) => {
+                    connection.query(same_category, [results[0].category, results[0].id], (err, category_results, fields) => {
                         if (err) {
                             connection.rollback(() => {
                                 console.log(err);
@@ -365,12 +368,21 @@ app.get('/item_info/:num', (req, res) => {
                                 res.status(500).send('Internal Server Error!!!');
                             })
                         }
-                        connection.release();
-                        res.render('item_info', { article: results[0], loginid: loginid, category_results: category_results });
+                        connection.commit((err) => {
+                            if (err) {
+                                connection.rollback(() => {
+                                    console.log(err);
+                                    connection.release();
+                                    res.status(500).send('Internal Server Error!!!');
+                                })
+                            }
+                            connection.release();
+                            res.render('item_info', { article: results[0], loginid: loginid, category_results: category_results });
+                        });
                     });
                 });
             });
-        })
+        });
     });
 });
 
