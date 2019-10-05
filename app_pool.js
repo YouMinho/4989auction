@@ -46,7 +46,7 @@ var upload = multer({ storage: storage });
 app.locals.pretty = true;
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 app.use(express.static('public'));
-app.use(['/item_info','/'], express.static('uploads'));
+app.use(['/item_info', '/'], express.static('uploads'));
 
 app.use(session({
     secret: '@#@$MYSIGN#@$#$',
@@ -144,7 +144,7 @@ app.get('/', (req, res) => {
                         console.log(err);
                         connection.release();
                         res.status(500).send('Internal Server Error!!!')
-                    }                    
+                    }
                     connection.release();
                     res.render('main', { h_article: h_results, c_article: c_results, category: 'main', cont: parseInt(countse[0].num) / 10 });
                 });
@@ -218,7 +218,7 @@ app.post('/item_add_content', upload.single('img'), (req, res) => {
     let seller_id = req.session.userid;
     let min_price = req.body.min_price.replace(/,/gi, '');
     let max_price = req.body.max_price.replace(/,/gi, '');
-    
+
     let values = [seller_id, req.body.category, req.body.title, req.body.content, min_price, max_price, min_price];
     let item_insert = `
         insert into item (seller_id, category, title, content, min_price, max_price, start_time, end_time, price)
@@ -276,94 +276,44 @@ app.get('/item_modify_content', (req, res) => {
 app.get('/item_delete', (req, res) => {
     var num = req.query.num;
     console.log(num);
-    res.redirect('/item_info/' + num);
-    //     var num = req.params.num;
-    //     let board_check = `
-    //         select *
-    //         from board
-    //         where num = ?
-    //     `;
-    //     let file_data = `
-    //         select * from fileinfo
-    //         where num = ?
-    //     `;
-    //     let file_delete = `
-    //         delete from fileinfo
-    //         where num = ?
-    //     `;
-    //     let board_delete = `
-    //         delete from board
-    //         where num = ?
-    //     `;
-    //     pool.getConnection((err, connection) => {
-    //         connection.query(board_check, [num], (err, check_result) => {
-    //             if (err) {
-    //                 console.log(err);
-    //                 connection.release();
-    //                 res.status(500).send('Internal Server Error!!!');
-    //             }
-    //             if (check_result.length > 0) {
 
-    //                 connection.query(board_check, [num], (err, check_result) => {
-    //                     if (err) {
-    //                         console.log(err);
-    //                         connection.release();
-    //                         res.status(500).send('Internal Server Error!!!');
-    //                     }
-    //                 });
-    //                 connection.query(file_data, [num], (err, file_data) => {
-    //                     if (err) {
-    //                         console.log(err);
-    //                         connection.release();
-    //                         res.status(500).send('Internal Server Error');
-    //                     }
-    //                     connection.beginTransaction((err) => {
-    //                         if (err) {
-    //                             throw err;
-    //                         }
-    //                         connection.query(file_delete, [num], (err, results, fields) => {
-    //                             if (err) {
-    //                                 console.log(err);
-    //                                 res.status(500).send('Internal Server Error!!!');
-    //                             }
-    //                             connection.query(board_delete, [num], (err, results, fields) => {
-    //                                 if (err) {
-    //                                     console.log(err);
-    //                                     res.status(500).send('Internal Server Error!!!');
-    //                                 }
-    //                                 connection.commit((err) => {
-    //                                     if (err) {
-    //                                         connection.rollback(() => {
-    //                                             console.log(err);
-    //                                             throw err;
-    //                                         });
-    //                                     }
+    let img_data = `
+        select *
+        from img
+        where item_id = ?
+    `;
 
-    //                                     // 정상 commit일때 파일 삭제
-    //                                     if (file_data[0].savefolder) {
-    //                                         file_data.forEach(function(element, index) {
-    //                                             fs.unlink('./uploads/' + element.savefolder + '/' + element.savename, (err) => {
-    //                                                 if (err) {
-    //                                                     console.log(err);
-    //                                                     conn.release();
-    //                                                     throw err;
-    //                                                 }
-    //                                             });
-    //                                         });
-    //                                     }
-    //                                     res.render('item_delete', { pass: true });
-    //                                 });
-    //                             });
-    //                         });
-    //                     });
-    //                 });
-    //             } else {
-    //                 connection.release();
-    //                 res.render('item_delete', { pass: false });
-    //             }
-    //         });
-    //     });
-    //     res.redirect('/');
+    let item_delete = `
+        delete from item
+        where id = ?
+    `;
+
+    pool.getConnection((err, connection) => {
+        connection.query(img_data, num, (err, result) => {
+            if (err) {
+                console.log(err);
+                connection.release();
+                res.status(500).send('Internal Server Error!!!');
+            }
+            connection.query(item_delete, num, (err) => {
+                if (err) {
+                    console.log(err);
+                    connection.release();
+                    res.status(500).send('Internal Server Error!!!');
+                }
+                if (result[0].savefolder) {
+                    fs.unlink('./uploads/' + result[0].savefolder + '/' + result[0].savename, (err) => {
+                        if (err) {
+                            console.log(err);
+                            conn.release();
+                            throw err;
+                        }
+                    });
+                }
+                res.redirect('/');
+            });
+        });
+    });
 });
 
 app.get('/item_info/:num', (req, res) => {
@@ -414,7 +364,7 @@ app.get('/item_info/:num', (req, res) => {
                                 connection.release();
                                 res.status(500).send('Internal Server Error!!!');
                             })
-                        }                        
+                        }
                         connection.release();
                         res.render('item_info', { article: results[0], loginid: loginid, category_results: category_results });
                     });
