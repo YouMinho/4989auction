@@ -326,7 +326,7 @@ app.get('/item_info/:num', (req, res) => {
     `;
     let item_select = `
         select i.id, i.category, format(i.price, 0) price, format(i.max_price, 0) max_price,
-            time_to_sec(timediff(i.end_time, now())) time,
+            time_to_sec(timediff(i.end_time, now())) time, i.bidder_id,
             i.title, i.content, i.seller_id, u.tel1, u.tel2, u.tel3,
             if(i.end_time > now(), 'true', 'false') flag,
             g.item_id, g.savefolder, g.originalname, g.savename
@@ -605,7 +605,7 @@ nsp.on('connection', (socket) => {
                                     })
                                 }
                                 connection.release();
-                                nsp.to(num).emit('chat message', numberWithCommas(msg));
+                                nsp.to(num).emit('chat message', {msg: numberWithCommas(msg), id: id});
                             });
                         });
                     }

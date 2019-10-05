@@ -6,6 +6,7 @@
 <body>
     <script>
         let time = '<%= article.time %>';
+        let winner = '<%= article.bidder_id%>'
         let d = parseInt(time / (60*60*24));
         time -= d * (60*60*24);
         let h = parseInt(time / (60 * 60));
@@ -13,11 +14,10 @@
         let m = parseInt(time / 60);
         time -= m * (60);
         let s = time;        
-
+        
         function time_load() {
             s--;
-            if (d == 0 && s < 0) {
-                $("#time").text('경매 종료 상품');
+            if (d <= 0 && s < 0) {
             } else {
 
                 if(s == -1) {
@@ -39,6 +39,7 @@
             }    
         }
         $(document).ready(() => {
+            $("#time").text(d + '일 '+ h + '시간 ' + m + '분 ' + s + '초');
             let time_load = setInterval("time_load()", 1000)
         })
     </script>
@@ -61,9 +62,11 @@
             $('#money').val('');
             return false;
         });
-        socket.on('chat message', (msg) => {            
-            
-            $('#price').text(msg)
+        socket.on('chat message', (data) => {   
+            console.log(data.id);
+                            
+            $('#price').text(data.msg)
+            $('#bidder').text('(' + data.id + ')')
         });
       });
     </script>
@@ -93,16 +96,32 @@
         <img style="width: 100%; min-height: 300px; max-height: 300px" class="img-fluid rounded mb-4" src="<%=article.savefolder%>/<%=article.savename%>"> <!-- 750x450 -->
       </div>
       <div class="col-lg-6">
-        <div style="margin-bottom: 15px; color: red;">
-          <span style="font-size: 30px;">남은시간 : </span>
-          <span id="time" style="font-size: 32px;"></span>
+        <% if(article.time > 0) { %>
+          <div style="margin-bottom: 15px; color: red;">
+              <span style="font-size: 30px;">남은시간 : </span>
+              <span id="time" style="font-size: 32px;"></span>
+            </div>
+        <%} else { %> 
+        <div style="margin-bottom: 15px;">
+          <span style="font-size: 30px;">낙찰자 : </span>
+          <span style="font-size: 32px;"><%= article.bidder_id %>님</span>
         </div>
+        <% } %>
         <div>
           <div class="card-body" style="padding: 0 15px 0 5px;">
             <div class="input-group" style="width: 450px;">
               <div style="display: inline-block; width: 350px;">
-                <span style="font-size: 30px;">현재가격 : </span>
-                <span id="price" style="font-size: 35px;"><%=article.price %></span></div>
+                  <% if(article.time > 0) { %>
+                    <span style="font-size: 30px;">현재가격 : </span>
+                    <span id="price" style="font-size: 35px;"><%=article.price %></span>
+                    <% if(article.bidder_id) { %>
+                    <span id="bidder" style="font-size: 20px;">(<%=article.bidder_id %>)</span>
+                    <% } %>
+                  <%} else { %> 
+                    <span style="font-size: 30px;">낙찰가격 : </span>
+                    <span id="price" style="font-size: 35px;"><%=article.price %></span>
+                  <% } %>
+                </div>
             </div>
             <div style="color : gray; font-size: 80%; padding: 5px 0 0 20px;">※ 상한가 : <%= article.max_price%>원 이하 가격만 입찰 가능합니다.</div><br>
           </div>
@@ -143,7 +162,7 @@
     <!-- /.row -->
     <div style="padding: 15px; border-top: 1.5px solid gray;">
       <h3>상세설명</h3>
-      <div style="overflow-y:scroll; height: 500px;"><%-article.content%></div>
+      <div id="content" style="overflow-y:scroll; height: 500px;"><%-article.content%></div>
     </div>
 
     <!-- Our Customers -->
