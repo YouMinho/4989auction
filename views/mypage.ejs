@@ -90,7 +90,9 @@
                     %>
                     <div class="span3 carousel-block">
                         <div class="card h-100">
-                            <a href="/item_info/<%= itarticle1.id %>"><img class="card-img-top" src="http://placehold.it/200x100" alt=""></a>
+                            <a href="/item_info/<%= itarticle1.id %>">
+                                <img class="card-img-top" src="<%=itarticle1.savefolder%>/<%=itarticle1.savename%>" alt="" style="min-height: 127px; max-height: 127px">
+                            </a>
                             <div class="card-body">
                                 <h4 class="card-title">
                                     <a href="/item_info/<%= itarticle1.id %> %>"><%=itarticle1.title%></a>
@@ -121,7 +123,9 @@
                     %>
                     <div class="span3 carousel-block">
                         <div class="card h-100">
-                            <a href="/item_info/<%= itarticle2.itid %>"><img class="card-img-top" src="http://placehold.it/200x100" alt=""></a>
+                            <a href="/item_info/<%= itarticle2.itid %>">
+                                <img class="card-img-top" src="<%=itarticle2.savefolder%>/<%=itarticle2.savename%>" alt="" style="min-height: 127px; max-height: 127px">
+                            </a>
                             <div class="card-body">
                                 <h4 class="card-title">
                                     <a href="/item_info/<%= itarticle2.itid %>"><%=itarticle2.tit%></a>

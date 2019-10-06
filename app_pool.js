@@ -525,14 +525,16 @@ app.get('/mypage', (req, res) => {
         where id = ?
     `;
     let item_data_query = `
-        select title, id
-        from item
-        where seller_id = ?
+        select item.title title, item.id id, img.savefolder savefolder, img.savename savename
+        from item, img
+        where item.id = img.item_id
+        and item.seller_id = ?
     `;
     let cham_data_query =`
-        select item.title tit, item.id itid
-        from bid, item
+        select item.title tit, item.id itid, img.savefolder savefolder, img.savename savename
+        from bid, item, img
         where bid.item_id = item.id
+        and item.id = img.item_id
         and bid.bidder_id = ?;
     `
     pool.getConnection((err, connection) => {
