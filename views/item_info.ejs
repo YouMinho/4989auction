@@ -55,7 +55,7 @@
         socket = io('/nsp');
         socket.emit('joinRoom', num, loginid);       
         
-        $('form').submit(() => {
+        $('#ipchalform').submit(() => {
             let inputstr = $('#money').val();
             let sendstr = inputstr.replace(/,/gi, '');
             socket.emit('chat message', sendstr);
@@ -134,7 +134,7 @@
               가능합니다.</div><br>
           </div>
           <div class="card-body" style="padding: 15px 15px 0 5px;">
-            <form action="">
+            <form id="ipchalform" action="">
               <div class="input-group" style="width: 450px;">
                 <input id="money" type="text" style="width: 300px;" name="input_price" class="form-control"
                   placeholder="금액을 입력하세요." onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' maxlength=8>
@@ -250,7 +250,7 @@
                   <% } else { %>
                     <% comment_lists.forEach(function(comment){ %>
                       <tr>
-                          <td class="text-center"><%=comment.content%></td>
+                          <td class="text-left"><%=comment.content%></td>
                           <td class="text-center"><%=comment.writer%></td>
                           <td class="text-center"><%=comment.time%></td>
                       </tr>
