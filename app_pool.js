@@ -346,7 +346,7 @@ app.get('/item_info/:num', (req, res) => {
         order by i.id desc
     `;
     let bid_list = `
-        select b.id id, b.price price, date_format(b.time, '%Y-%m-%d %H:%i:%s') time, u.name name
+        select b.id id, b.price price, date_format(b.time, '%Y-%m-%d %H:%i:%s') time, u.id bidder
         from bid b, users u
         where b.bidder_id = u.id
         and b.item_id = ?
