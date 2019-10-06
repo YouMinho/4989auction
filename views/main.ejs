@@ -8,10 +8,10 @@
     <div>
         <!-- Page Content -->
         <div class="container">
+            <br>
             <% if(user.userid) { %>
-            <h1 class="my-4"><%=user.name%>님 환영합니다.</h1>
+            <h1><%=user.name%>님 환영합니다.</h1>
             <% }%>
-            <h3 class="my-4"><%=category%></h3>
             <!-- Search Section -->
 
             <form method="POST" action="">
@@ -30,6 +30,7 @@
                     </div>
                 </div>
             </form>
+            <br>
 
             <!-- Portfolio Section -->
             <h2>인기품목</h2>
