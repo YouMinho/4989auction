@@ -353,6 +353,13 @@ app.get('/item_info/:num', (req, res) => {
         order by time desc
         LIMIT 0,10;
     `
+    let comment_list = `
+        select c.id id, c.item_id item_id, c.writer_id writer, c.content content,  date_format(c.time, '%Y-%m-%d %H:%i:%s') time
+        from comments c, users u
+        where c.writer_id = u.id
+        and c.item_id = ?
+        order by time desc;
+    `
 
     pool.getConnection((err, connection) => {
         connection.beginTransaction((err) => {
@@ -362,27 +369,25 @@ app.get('/item_info/:num', (req, res) => {
                     connection.release();
                     res.status(500).send('Internal Server Error!!!');
                 }
-                connection.query(bid_list, [num], (err, bid_lists, fields) => {
+                connection.query(comment_list, [num], (err, comment_lists, fields) => {
                     if (err) {
                         console.log(err);
                         connection.release();
                         res.status(500).send('Internal Server Error!!!');
                     }
-                    connection.query(item_select, [num], (err, results, fields) => {
+                    connection.query(bid_list, [num], (err, bid_lists, fields) => {
                         if (err) {
                             console.log(err);
                             connection.release();
                             res.status(500).send('Internal Server Error!!!');
                         }
-                        connection.query(same_category, [results[0].category, results[0].id], (err, category_results, fields) => {
+                        connection.query(item_select, [num], (err, results, fields) => {
                             if (err) {
-                                connection.rollback(() => {
-                                    console.log(err);
-                                    connection.release();
-                                    res.status(500).send('Internal Server Error!!!');
-                                })
+                                console.log(err);
+                                connection.release();
+                                res.status(500).send('Internal Server Error!!!');
                             }
-                            connection.commit((err) => {
+                            connection.query(same_category, [results[0].category, results[0].id], (err, category_results, fields) => {
                                 if (err) {
                                     connection.rollback(() => {
                                         console.log(err);
@@ -390,13 +395,46 @@ app.get('/item_info/:num', (req, res) => {
                                         res.status(500).send('Internal Server Error!!!');
                                     })
                                 }
-                                connection.release();
-                                res.render('item_info', { article: results[0], loginid: loginid, category_results: category_results, bid_lists: bid_lists });
+                                connection.commit((err) => {
+                                    if (err) {
+                                        connection.rollback(() => {
+                                            console.log(err);
+                                            connection.release();
+                                            res.status(500).send('Internal Server Error!!!');
+                                        })
+                                    }
+                                    connection.release();
+                                    res.render('item_info', { article: results[0], loginid: loginid, category_results: category_results, bid_lists: bid_lists, comment_lists: comment_lists });
+                                });
                             });
                         });
                     });
                 });
             });
+        });
+    });
+});
+
+app.post('/comment/add', (req, res) => {
+    const sess = req.session;
+    let num = req.query.num;
+    let comment = req.body.comment;
+
+    let values = [num, sess.userid, comment];
+    let comments_insert = `
+        insert into comments
+        (item_id, writer_id, content, time)
+        values (?, ?, ?, now())
+    `;
+    pool.getConnection((err, connection) => {
+        connection.query(comments_insert, values, (err) => {
+            if (err) {
+                console.log(err);
+                connection.release();
+                res.status(500).send('Internal Server Error!!!');
+            }            
+            res.redirect('/item_info/'+ num);
+            connection.release();
         });
     });
 });

@@ -203,7 +203,6 @@
 
     <!-- /.row -->
     <div class="container mt-3">
-      <h2>없어도 되지않을까</h2><br>
 
       <!-- Nav tabs -->
       <ul class="nav nav-tabs">
@@ -218,9 +217,9 @@
       <!-- Tab panes -->
       <div class="tab-content">
         <div id="home" class="container tab-pane active"><br>          
-          <h3>대댓대대대댓</h3><br>
+          <br>
           <div>
-          <form method="post" action="/comment/add">
+          <form method="post" action="/comment/add?num=<%=article.id%>">
             <div class="input-group" style="width: 100%;">
               <input id="comment" type="text" style="width: 300px;" name="comment" class="form-control" placeholder="내용을 입력하세요." maxlength=255>
               <span class="input-group-btn">
@@ -232,6 +231,11 @@
         </div>
           <br>
           <table class="table table-hover">
+              <colgroup>
+                  <col width="*">
+                  <col width="10%">
+                  <col width="20%">
+              </colgroup>
               <thead class="thead-dark">
                   <tr>
                       <th class="text-center">내용</th>
@@ -240,13 +244,19 @@
                   </tr>
               </thead>
               <tbody>
-                  <% bid_lists.forEach(function(bid){ %>
-                  <tr>
-                      <td class="text-center"><%=bid.name%></td>
-                      <td class="text-center"><%=bid.price%></td>
-                      <td class="text-center"><%=bid.time%></td>
-                  </tr>
-                  <% }); %>
+                  <% if(comment_lists.length == 0){ %>
+                    <tr>
+                        <td class="text-center" colspan="3">작성된 댓글이 없습니다.</td>
+                    </tr>
+                  <% } else { %>
+                    <% comment_lists.forEach(function(comment){ %>
+                      <tr>
+                          <td class="text-center"><%=comment.content%></td>
+                          <td class="text-center"><%=comment.writer%></td>
+                          <td class="text-center"><%=comment.time%></td>
+                      </tr>
+                    <% }); %>
+                  <% } %>
               </tbody>
           </table>
         </div>
@@ -261,13 +271,19 @@
                   </tr>
               </thead>
               <tbody>
-                  <% bid_lists.forEach(function(bid){ %>
-                  <tr>
-                      <td class="text-center"><%=bid.name%></td>
-                      <td class="text-center"><%=bid.price%></td>
-                      <td class="text-center"><%=bid.time%></td>
-                  </tr>
-                  <% }); %>
+                  <% if(bid_lists.length == 0){ %>
+                    <tr>
+                        <td class="text-center" colspan="3">입찰 기록이 없습니다.</td>
+                    </tr>
+                  <% } else { %>
+                    <% bid_lists.forEach(function(bid){ %>
+                      <tr>
+                          <td class="text-center"><%=bid.name%></td>
+                          <td class="text-center"><%=bid.price%></td>
+                          <td class="text-center"><%=bid.time%></td>
+                      </tr>
+                    <% }); %>
+                  <% } %>
               </tbody>
           </table>
         </div>
