@@ -222,7 +222,12 @@
             <div class="input-group" style="width: 100%;">
               <input id="comment" type="text" style="width: 300px;" name="comment" class="form-control" placeholder="내용을 입력하세요." maxlength=255>
               <span class="input-group-btn">
-                <button id="comment" style="margin-left: 15px;" class="btn btn-secondary" type="submit">등록</button>
+                <% if(user.userid) { %>
+                  <button id="comment" style="margin-left: 15px;" class="btn btn-secondary" type="submit">등록</button>  
+                <% } else { %>
+                  <button id="comment" style="margin-left: 15px;" class="btn btn-secondary" type="submit" disabled="disabled">등록</button>
+                <%}%>
+                
                 <!-- <button type="button" id="comment" style="margin-left: 15px;" class="btn btn-secondary" onclick="location.href = '/login';">등록</button> -->
               </span>
             </div>
