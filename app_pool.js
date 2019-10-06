@@ -345,6 +345,14 @@ app.get('/item_info/:num', (req, res) => {
         and i.id != ?
         order by i.id desc
     `;
+    let bid_list = `
+        select b.id id, b.price price, date_format(b.time, '%Y-%m-%d %H:%i:%s') time, u.name name
+        from bid b, users u
+        where b.bidder_id = u.id
+        and b.item_id = ?
+        order by time desc
+        LIMIT 0,10;
+    `
 
     pool.getConnection((err, connection) => {
         connection.beginTransaction((err) => {
@@ -354,21 +362,19 @@ app.get('/item_info/:num', (req, res) => {
                     connection.release();
                     res.status(500).send('Internal Server Error!!!');
                 }
-                connection.query(item_select, [num], (err, results, fields) => {
+                connection.query(bid_list, [num], (err, bid_lists, fields) => {
                     if (err) {
                         console.log(err);
                         connection.release();
                         res.status(500).send('Internal Server Error!!!');
                     }
-                    connection.query(same_category, [results[0].category, results[0].id], (err, category_results, fields) => {
+                    connection.query(item_select, [num], (err, results, fields) => {
                         if (err) {
-                            connection.rollback(() => {
-                                console.log(err);
-                                connection.release();
-                                res.status(500).send('Internal Server Error!!!');
-                            })
+                            console.log(err);
+                            connection.release();
+                            res.status(500).send('Internal Server Error!!!');
                         }
-                        connection.commit((err) => {
+                        connection.query(same_category, [results[0].category, results[0].id], (err, category_results, fields) => {
                             if (err) {
                                 connection.rollback(() => {
                                     console.log(err);
@@ -376,8 +382,17 @@ app.get('/item_info/:num', (req, res) => {
                                     res.status(500).send('Internal Server Error!!!');
                                 })
                             }
-                            connection.release();
-                            res.render('item_info', { article: results[0], loginid: loginid, category_results: category_results });
+                            connection.commit((err) => {
+                                if (err) {
+                                    connection.rollback(() => {
+                                        console.log(err);
+                                        connection.release();
+                                        res.status(500).send('Internal Server Error!!!');
+                                    })
+                                }
+                                connection.release();
+                                res.render('item_info', { article: results[0], loginid: loginid, category_results: category_results, bid_lists: bid_lists });
+                            });
                         });
                     });
                 });
