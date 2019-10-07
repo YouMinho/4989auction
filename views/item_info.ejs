@@ -63,10 +63,10 @@
             return false;
         });
         socket.on('chat message', (data) => {   
-            console.log(data.id);
+            let bidder = '(' + data.id + ')';
                             
             $('#price').text(data.msg)
-            $('#bidder').text('(' + data.id + ')')
+            $('#bidder').text(bidder)
         });
       });
       socket.on('chat message', (msg) => {
@@ -123,7 +123,9 @@
                     <span id="price" style="font-size: 35px;"><%=article.price %></span>
                     <% if(article.bidder_id) { %>
                     <span id="bidder" style="font-size: 20px;">(<%=article.bidder_id %>)</span>
-                    <% } %>
+                    <% } else { %>
+                      <span id="bidder" style="font-size: 20px;"></span>
+                    <%}%>
                   <%} else { %> 
                     <span style="font-size: 30px;">낙찰가격 : </span>
                     <span id="price" style="font-size: 35px;"><%=article.price %></span>
