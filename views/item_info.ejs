@@ -175,12 +175,12 @@
     <!-- /.row -->
     <div style="padding: 15px; border-top: 1.5px solid gray;">
       <h3>상세설명</h3>
-      <div id="content" style="overflow-y:scroll; height: 500px;"><%-article.content%></div>
+      <div id="content" style="overflow-y:scroll; min-height: 300px; max-height: 700px"><%-article.content%></div>
     </div>
 
     <!-- Our Customers -->
     <% if(category_results.length) { %>
-      <h2>같은 카테고리의 다른 상품</h2>
+      <h2 style="padding: 15px; border-top: 1.5px solid gray;">같은 카테고리의 다른 상품</h2>
       <% let len = category_results.length %>
       <% if(category_results.length > 6) { %>
       <% len = 6 %>
