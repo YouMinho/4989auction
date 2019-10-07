@@ -266,11 +266,67 @@ app.post('/item_add_content', upload.single('img'), (req, res) => {
 });
 
 app.get('/item_modify', (req, res) => {
-    res.render('item_modify');
+    let num = req.query.num;
+
+    let item_select = `
+        select * 
+        from item
+        where id = ?
+    `;
+
+    pool.getConnection((err, connection) => {
+        connection.query(item_select, num, (err, result) => {
+            if (err) {
+                console.log(err);
+                connection.release();
+                res.status(500).send('Internal Server Error!!!');
+            }
+            console.log(result);
+            res.render('item_modify', { article: result[0] });
+        });
+    });
 });
 
 app.get('/item_modify_content', (req, res) => {
     res.render('item_modify_content');
+});
+
+app.post('/item_modify_content', (req, res) => {
+    let content = req.body.content;
+    let id = req.body.id;
+
+    console.log(content);
+    console.log(id);
+
+    let item_update = `
+        update item
+        set content = ?
+        where id = ?
+    `;
+
+    let values = [content, id];
+
+    pool.getConnection((err, connection) => {
+        connection.query(item_update, values, (err, result) => {
+            if (err) {
+                console.log(err);
+                connection.release();
+                res.status(500).send('Internal Server Error!!!');
+            }
+            connection.commit((err) => {
+                if (err) {
+                    connection.rollback(() => {
+                        console.log(err);
+                        connection.release();
+                        res.status(500).send('Internal Server Error!!!');
+                    })
+                }
+                console.log('result : ', result);
+                connection.release();
+                res.redirect('/item_info/' + id);
+            });
+        });
+    });
 });
 
 app.get('/item_delete', (req, res) => {
